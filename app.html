@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Memory Garden — Player</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./libs/three.module.js",
+      "three/addons/renderers/CSS3DRenderer.js": "./libs/CSS3DRenderer.js",
+      "mindar-image-three": "./libs/mindar-image-three.prod.js"
+    }
+  }
+  </script>
+</head>
+<body class="app">
+  <div id="app"></div>
+
+  <div id="hud">
+    <a class="back" href="index.html" title="Back to menu">⌂</a>
+    <div id="scene-title"></div>
+  </div>
+
+  <div id="caption"></div>
+
+  <div id="start-overlay">
+    <h1 id="ov-title">The Memory Garden</h1>
+    <p id="ov-sub"></p>
+    <button id="start-btn">Start</button>
+    <p id="err"></p>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
