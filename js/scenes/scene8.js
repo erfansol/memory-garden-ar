@@ -1,168 +1,194 @@
-// Scene 8 — "Planting Seeds": three seeds, three promises, and a garden growing taller
+// Scene 8 — "Planting Seeds": Diana comes out of the bushes and plants three seeds,
+// one for each quiet promise. Each seed answers with a soft light and a tiny sprout.
 import * as THREE from 'three';
-import {
-  loadTextures, cutout, Drift, caption, mulberry32,
-  seg, window01, lerp, easeInOut, easeOut, easeOutBack, pulse,
-} from '../engine.js';
+import { loadTextures, loadTexture, window01, smooth01, seg, lerp, easeInOut, pulse, cutout } from '../engine.js';
+import { videoPlane, atlasPlane, loadManifest } from '../video.js';
+import { Particles, GroundRing, TEX, contactShadow, flatSprite, faceCamera } from '../fx.js';
+import { Experience, AppearFX } from '../stage.js';
+import { px } from '../layout.js';
 
-const LOOP = 32;
-
-// The three planting spots (matching the printed soil mounds on the page)
+const LOOP = 73;
+const H = 0.27;                       // height of the video cut-out (girl + soil mound)
+const WALK_V = 0.2222;                // in the first frame, everything below this is the soil mound
+const PLANTED_V = 0.3;                // planted.png = bottom 30% of the last frame (mound + sprout)
+const ENTRY = [0.1, 0.13];            // she steps out from between the paper bushes
 const SPOTS = [
-  { x: -0.28, y: -0.04 },
-  { x: 0.00, y: -0.13 },
-  { x: 0.26, y: -0.06 },
+  { p: px(2874, 1467), fx: 'sparkles', grow: 's9_daisy' },   // the printed hole with the seed
+  { p: [0.02, -0.04], fx: 'petals', grow: 's9_lavender' },
+  { p: [-0.25, 0.09], fx: 'rain', grow: 's9_daisy' },
 ];
 const MSGS = [
-  '“I cannot bring you back, but I can keep your memory with kindness.”',
+  '“I can’t bring you back, but I can keep your memory with kindness.”',
   '“Every time I remember you, something small grows inside me.”',
-  '“Memories do not end; they only change their shape.”',
+  '“Memories don’t end; they only change their shape.”',
 ];
-// Timing: entrance, then three planting stops
-const PLANT_AT = [5, 13, 21];
+// [arrive, playStart, rate] for the three plantings; the video is 21 s long
+const PLANT = [
+  { walk: [1.2, 3.0], play: 5.0, rate: 1.0 },
+  { walk: [26.3, 2.5], play: 29.6, rate: 1.5 },
+  { walk: [43.9, 2.5], play: 47.2, rate: 1.5 },
+];
+const VIDEO_LEN = 21.0;
+// moments inside the video (seconds at normal speed)
+const V_SEED = 9.5, V_COVER = 14.0, V_SPROUT = 16.6;
 
-export async function build(ctx) {
-  const T = await loadTextures({
-    girl: 'scene8/girl_stand.png',
-    small: 'scene8/bush_small.png',
-    medium: 'scene8/bush_medium.png',
-    tall: 'scene8/bush_tall.png',
-    seed: 'common/seed.png',
-    sprout: 'common/sprout.png',
-    ring: 'common/ring.png',
-    glow: 'common/glow.png',
-    petal: 'common/petal.png',
-  });
+async function planting() {
+  const X = new Experience('s8_hole');
+  X.title = 'Scene 8 · Planting Seeds';
+  const g = X.group;
+  const manifest = await loadManifest();
+  const T = await loadTextures({ planted: 'scene8/planted.png', petal: 'common/petal.png', glow: 'common/glow.png' });
+  const clip = await X.clip('s8_girl');
+  const grow = {};
+  for (const k of ['s9_daisy', 's9_lavender']) grow[k] = { meta: manifest[k], tex: (await loadTexture(manifest[k].file)).tex };
 
-  const g = new THREE.Group();
-
-  // The garden's three growth stages at the back of the page
-  const small = cutout(T.small, 0.62, { renderOrder: 2, opacity: 0 });
-  const medium = cutout(T.medium, 0.82, { renderOrder: 3, opacity: 0 });
-  const tall = cutout(T.tall, 1.0, { renderOrder: 4, opacity: 0 });
-  small.position.set(0, 0.30, 0);
-  medium.position.set(0, 0.305, 0);
-  tall.position.set(0, 0.31, 0);
-  g.add(small, medium, tall);
-
-  // The girl (paper doll) + a small shadow under her feet
-  const girl = cutout(T.girl, 0.17, { renderOrder: 10 });
+  const girl = X.billboard(videoPlane(clip, H, { reveal: 0, revealColor: 0xffe7b8, renderOrder: 14 }));
+  const gm = girl.userData.mat.uniforms;
+  girl.userData.spin.add(contactShadow(0.1, 0.03, 0.35));
   g.add(girl);
-  const girlShadow = cutout(T.glow, 0.12, { standing: false, anchor: 'center', renderOrder: 5 });
-  girlShadow.material.color.set(0x2a2015);
-  girlShadow.scale.y = 0.45;
-  g.add(girlShadow);
+  const appear = new AppearFX(g, { x: ENTRY[0], y: ENTRY[1], height: H * 0.7, radius: 0.06 });
+  const puff = new Particles(g, { count: 16, map: TEX.dot(), size: [0.008, 0.016], mode: 'burst', burstSpeed: [0.03, 0.07], life: [0.6, 1.1], color: 0xe8d2a8, opacity: 0.8, gravity: -0.2 });
+  const swap = new Particles(g, { count: 20, map: TEX.star(), size: [0.01, 0.022], mode: 'burst', additive: true, burstSpeed: [0.04, 0.09], life: [0.6, 1.2], colors: [0xffffff, 0xfff0c0] });
 
-  // For each planting spot: a seed, a glow ring, and a sprout
   const stations = SPOTS.map((s, i) => {
-    const seed = cutout(T.seed, 0.022, { anchor: 'center', renderOrder: 11 });
-    const ring = cutout(T.ring, 0.10, { standing: false, anchor: 'center', renderOrder: 5 });
-    const sprout = cutout(T.sprout, 0.05, { renderOrder: 6 });
-    ring.position.set(s.x, s.y, 0.004);
-    sprout.position.set(s.x, s.y, 0);
-    seed.material.opacity = 0;
-    ring.material.opacity = 0;
-    sprout.scale.setScalar(0.001);
-    g.add(seed, ring, sprout);
-    return { seed, ring, sprout, ...s };
+    const [x, y] = s.p;
+    const planted = X.billboard(new THREE.Group());
+    const pm = cutout(T.planted, H * clip.meta.aspect, { renderOrder: 10 });
+    planted.add(pm);
+    planted.position.set(x, y, 0);
+    planted.visible = false;
+    g.add(planted);
+    const glow = flatSprite(TEX.dot(), 0.1, 0.06, { additive: true, color: 0xffd98a, opacity: 0 });
+    glow.position.set(x, y, 0.003);
+    g.add(glow);
+    const seedBurst = new Particles(g, { count: 16, map: TEX.star(), size: [0.008, 0.018], mode: 'burst', additive: true, center: [x, y, 0.02], burstSpeed: [0.02, 0.06], life: [0.8, 1.4], colors: [0xffffff, 0xffe9a8] });
+    const ring = new GroundRing(g, { size: 0.14, color: 0xffe4a8, dur: 1.8 });
+    let fx;
+    const b = (dx, z) => ({ x: [x - dx, x + dx], y: [y - dx * 0.6, y + dx * 0.6], z });
+    if (s.fx === 'sparkles') fx = new Particles(g, { count: 16, map: TEX.star(), size: [0.008, 0.016], mode: 'float', additive: true, twinkle: 1, sway: 0.01, colors: [0xffffff, 0xfff0b8], box: b(0.05, [0.02, 0.15]), seed: 81 });
+    else if (s.fx === 'petals') fx = new Particles(g, { count: 13, map: T.petal.tex, size: [0.01, 0.016], mode: 'fall', spin: 1.6, sway: 0.02, speed: [0.02, 0.035], colors: [0xd8c4ff, 0xc9b0f5, 0xeadcff], box: b(0.06, [0.005, 0.22]), seed: 82 });
+    else fx = new Particles(g, { count: 28, map: TEX.streak(), size: [0.014, 0.022], mode: 'fall', spin: 0, sway: 0.002, speed: [0.35, 0.5], color: 0xcfe2ff, opacity: 0.55, box: b(0.05, [0.0, 0.24]), seed: 83 });
+    const ripples = s.fx === 'rain' ? [0, 1, 2].map(() => new GroundRing(g, { size: 0.03, color: 0xe6f0ff, dur: 1.1 })) : [];
+    // the finale: each sprout grows into a flower
+    const plant = X.billboard(atlasPlane(grow[s.grow].tex, grow[s.grow].meta, 0.12, { renderOrder: 11 }));
+    plant.position.set(x, y + 0.004, H * 0.19);
+    plant.visible = false;
+    g.add(plant);
+    return { x, y, planted, glow, seedBurst, ring, fx, ripples, plant, seen: -1 };
   });
 
-  const petals = new Drift(g, T.petal, { count: 14, mode: 'across', seed: 55, size: 0.02, speed: 0.05, opacity: 0.8, zRange: [0.05, 0.3], yRange: [-0.2, 0.25] });
+  X.onRestart = () => {
+    stations.forEach((s) => { s.planted.visible = false; s.plant.visible = false; });
+    clip.pause(); clip.seek(0);
+  };
 
-  // The girl's path: enters from the right and walks between the spots
-  const PATH = [
-    { t0: 0.5, t1: 3.5, from: { x: 0.58, y: -0.02 }, to: { x: SPOTS[0].x + 0.13, y: SPOTS[0].y + 0.02 } },
-    { t0: 9.0, t1: 11.5, from: { x: SPOTS[0].x + 0.13, y: SPOTS[0].y + 0.02 }, to: { x: SPOTS[1].x + 0.13, y: SPOTS[1].y + 0.02 } },
-    { t0: 17.0, t1: 19.5, from: { x: SPOTS[1].x + 0.13, y: SPOTS[1].y + 0.02 }, to: { x: SPOTS[2].x + 0.13, y: SPOTS[2].y + 0.02 } },
-    { t0: 25.0, t1: 27.5, from: { x: SPOTS[2].x + 0.13, y: SPOTS[2].y + 0.02 }, to: { x: 0.58, y: -0.02 } },
-  ];
+  X.update = (t) => {
+    if (t > LOOP) { X.start(); return; }
+    const out = 1 - smooth01((t - 69.5) / 2.5);
 
-  function girlPos(tl) {
-    let x = PATH[0].from.x, y = PATH[0].from.y, moving = 0;
-    for (const p of PATH) {
-      if (tl >= p.t1) { x = p.to.x; y = p.to.y; }
-      else if (tl >= p.t0) {
-        const k = seg(tl, p.t0, p.t1 - p.t0);
-        x = lerp(p.from.x, p.to.x, k);
-        y = lerp(p.from.y, p.to.y, k);
-        moving = Math.sin(seg(tl, p.t0, p.t1 - p.t0, (v) => v) * Math.PI);
-        break;
-      } else break;
+    // --- where is Diana and what is she doing? ---
+    let pos = ENTRY, walking = false, idx = -1;
+    for (let i = 0; i < PLANT.length; i++) {
+      const P = PLANT[i];
+      if (t >= P.walk[0]) idx = i;
     }
-    return { x, y, moving };
-  }
+    if (idx >= 0) {
+      const P = PLANT[idx];
+      const from = idx === 0 ? ENTRY : SPOTS[idx - 1].p;
+      const to = SPOTS[idx].p;
+      const k = seg(t, P.walk[0], P.walk[1], easeInOut);
+      pos = [lerp(from[0], to[0], k), lerp(from[1], to[1], k)];
+      walking = k > 0 && k < 1;
+    }
+    const bob = walking ? Math.abs(Math.sin(t * 8.5)) * 0.007 : 0;
+    girl.position.set(pos[0], pos[1], bob);
+    girl.userData.spin.rotation.z = walking ? 0.05 * Math.sin(t * 8.5) : 0;
 
-  function update(t) {
-    const tl = t % LOOP;
+    // appear from the bushes
+    X.once('appear', t, 0.3, () => { appear.trigger(t); clip.pause(); clip.seek(0); });
+    appear.update(t);
+    // after the last seed she fades into light, leaving the garden to grow
+    const lastEnd = PLANT[2].play + VIDEO_LEN / PLANT[2].rate;
+    gm.reveal.value = appear.reveal(t, 0.05, 1.2) * (1 - smooth01((t - lastEnd - 0.1) / 1.4));
 
-    // The girl
-    const { x, y, moving } = girlPos(tl);
-    const bob = moving * Math.abs(Math.sin(tl * 6.5)) * 0.014;
-    girl.position.set(x, y, bob);
-    // A small lean while planting
-    let lean = 0;
-    for (const pt of PLANT_AT) lean = Math.max(lean, Math.sin(seg(tl, pt - 0.4, 1.6, easeInOut) * Math.PI));
-    girl.rotation.z = -lean * 0.18;
-    girl.scale.setScalar(1 - lean * 0.04);
-    const gvis = window01(tl, 0.5, LOOP - 3.5, 1.0);
-    girl.material.opacity = gvis;
-    // Walking direction: mirror when heading left
-    girl.scale.x = (moving > 0.02 && tl < 20 ? -1 : 1) * Math.abs(girl.scale.x);
-    girlShadow.position.set(x, y, 0.004);
-    girlShadow.material.opacity = gvis * 0.22;
+    // soil mound: hidden while walking, revealed when she arrives
+    let clipLow = WALK_V;
+    for (let i = 0; i < PLANT.length; i++) {
+      const P = PLANT[i];
+      const arrive = P.walk[0] + P.walk[1];
+      const end = P.play + VIDEO_LEN / P.rate;
+      if (t >= arrive && t < end) {
+        clipLow = WALK_V * (1 - smooth01((t - arrive) / 0.7));
+      }
+      X.once('dust' + i, t, arrive, () => { puff.trigger(t, [SPOTS[i].p[0], SPOTS[i].p[1], 0.01]); });
+      X.once('play' + i, t, P.play, () => {
+        clip.seek(0);
+        clip.play(P.rate);
+        if (i === 0) X.cueSound('assets/audio/s8_planting.m4a', 0.6);
+      });
+      const st = stations[i];
+      X.once('seed' + i, t, P.play + V_SEED / P.rate, () => { st.seedBurst.trigger(t); st.ring.trigger(t, st.x, st.y); });
+      // after the planting: leave the mound + sprout behind and move on
+      X.once('leave' + i, t, end, () => {
+        st.planted.visible = true;
+        st.planted.rotation.z = girl.rotation.z;
+        clip.pause();
+        clip.seek(0);
+        swap.trigger(t, [st.x, st.y, H * 0.5]);
+      });
+      const covered = smooth01((t - (P.play + V_COVER / P.rate)) / 1.5);
+      st.glow.material.opacity = covered * (0.18 + 0.12 * pulse(t, 2.2)) * out;
+      const bloom = smooth01((t - (P.play + V_SPROUT / P.rate)) / 1.5) * out;
+      st.fx.set(bloom);
+      st.fx.update(t);
+      st.ripples.forEach((r, j) => {
+        const n = Math.floor(t / (1.3 + j * 0.35));
+        if (bloom > 0.3 && r.n !== n) { r.n = n; r.trigger(t, st.x + [-0.03, 0.035, 0.0][j], st.y + [0.01, -0.015, 0.03][j]); }
+        r.update(t);
+      });
+      st.seedBurst.update(t);
+      st.ring.update(t);
+      st.planted.children[0].material.opacity = out;
 
-    // Planting stations
-    stations.forEach((st, i) => {
-      const pt = PLANT_AT[i];
-      // The seed arcs from the girl's hand into the soil
-      const k = seg(tl, pt, 0.9, (v) => v * v);
-      const vis = window01(tl, pt, 0.9, 0.15);
-      const sx = lerp(st.x + 0.10, st.x, k);
-      const sz = 0.12 * (1 - k) + 0.10 * Math.sin(Math.PI * k);
-      st.seed.position.set(sx, st.y, Math.max(0.008, sz));
-      st.seed.material.opacity = vis;
-      st.seed.rotation.z = k * 5;
-      // Glow ring once the seed lands
-      const ringK = seg(tl, pt + 0.85, 1.4, easeOut);
-      st.ring.material.opacity = ringK > 0 ? (1 - ringK) * 0.85 : 0;
-      st.ring.scale.setScalar(0.5 + ringK * 1.8);
-      // The sprout
-      const grow = seg(tl, pt + 1.1, 1.2, easeOutBack);
-      const sway = 0.06 * Math.sin(t * 2 + i * 2);
-      st.sprout.scale.set(Math.max(0.001, grow), Math.max(0.001, grow), 1);
-      st.sprout.rotation.z = sway * grow;
-      // Fade out near the end of the loop
-      st.sprout.material.opacity = window01(tl, pt + 1.1, LOOP - pt - 2.5, 1.0);
-    });
+      // finale: the sprouts grow into flowers
+      const gs = 61.5 + i * 0.8;
+      st.plant.visible = t > gs;
+      if (st.plant.visible) {
+        const u = st.plant.userData.mat.uniforms;
+        u.frame.value = Math.min(1, (t - gs) / 6) * (grow[SPOTS[i].grow].meta.frames - 1);
+        u.opacity.value = smooth01((t - gs) / 0.6) * out;
+        u.uBend.value = 0.035 * Math.sin(t * 1.3 + i);
+      }
+    }
+    gm.clipLow.value = clipLow;
+    // with the mound hidden, lower her so her shoes touch the paper
+    girl.position.z = bob - clipLow * H;
+    puff.update(t);
+    swap.update(t);
 
-    // The garden grows one stage after each planting
-    const g1 = seg(tl, PLANT_AT[0] + 1.6, 2.2, easeOut);
-    const g2 = seg(tl, PLANT_AT[1] + 1.6, 2.2, easeOut);
-    const g3 = seg(tl, PLANT_AT[2] + 1.6, 2.6, easeOut);
-    const fadeAll = 1 - seg(tl, LOOP - 1.8, 1.6);
-
-    small.scale.y = lerp(0.001, 1, g1);
-    small.material.opacity = g1 * (1 - g2 * 0.85) * fadeAll;
-    medium.scale.y = lerp(0.4, 1, g2);
-    medium.material.opacity = g2 * (1 - g3 * 0.9) * fadeAll;
-    tall.scale.y = lerp(0.5, 1, g3);
-    tall.material.opacity = g3 * fadeAll;
-    // The garden breathes softly
-    const breathe = 1 + 0.006 * Math.sin(t * 1.1);
-    tall.scale.x = breathe;
-    medium.scale.x = breathe;
-
-    // Petals after the final growth
-    petals.set(g3 * fadeAll);
-    petals.update(t);
-
-    // The message for each planting
     let msg = '';
-    stations.forEach((st, i) => {
-      if (window01(tl, PLANT_AT[i] + 1.4, 5.6, 0.6) > 0.5) msg = MSGS[i];
-    });
-    caption(msg);
-  }
+    if (window01(t, 1.0, 4.0, 0.5) > 0.5) msg = '“This one is for you, Liam,” I whispered.';
+    for (let i = 0; i < 3; i++) {
+      const at = PLANT[i].play + V_SPROUT / PLANT[i].rate + 0.3;
+      if (window01(t, at, 5.4, 0.5) > 0.5) msg = MSGS[i];
+    }
+    if (window01(t, 63, 5.5, 0.5) > 0.5) msg = 'After that, I planted more.';
+    X.say(msg);
+  };
+  return X;
+}
 
-  return { group: g, update };
+export const STATIONS = { s8_hole: planting };
+
+/* ---------------- preview stand-ins: the three layers of paper bushes ---------------- */
+export async function popup() {
+  const T = await loadTextures({ s: 'scene8/bush_small.png', m: 'scene8/bush_medium.png', l: 'scene8/bush_tall.png' });
+  const g = new THREE.Group();
+  const layers = [[T.l, 0.62, 0.285], [T.m, 0.44, 0.17], [T.s, 0.3, 0.075]];
+  layers.forEach(([a, w, y], i) => {
+    const c = cutout(a, w, { renderOrder: 1 + i });
+    c.position.set(0, y, 0);
+    g.add(c);
+  });
+  return g;
 }

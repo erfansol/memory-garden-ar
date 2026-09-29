@@ -1,126 +1,119 @@
-// Scene 9 — "The Memory Garden": a poetic moment of wind, flowers, and paper planes
+// Scene 9 — "The Memory Garden": a calm, breathing ending. Diana stands in the garden,
+// the wind moves through her hair and the flowering bushes, new flowers grow around
+// the page, and paper planes drift across on the breeze, trailing little dotted paths.
 import * as THREE from 'three';
-import {
-  loadTextures, cutout, Drift, caption, flyOn,
-  seg, window01, lerp, pulse, easeInOut,
-} from '../engine.js';
+import { loadTextures, loadTexture, window01, smooth01, pulse } from '../engine.js';
+import { videoPlane, atlasPlane, loadManifest } from '../video.js';
+import { Particles, PaperPlane, WindRibbon, TEX, bezier, contactShadow } from '../fx.js';
+import { Experience, AppearFX } from '../stage.js';
 
-const LOOP = 24;
+const GIRL = { x: 0.0, y: 0.08, h: 0.4 };
+const BUSH = { x: 0.0, y: 0.025, w: 0.56 };
+// new flowers around the page (clear of the printed text and the Scan Here icon)
+const FLOWERS = [
+  [-0.36, -0.01, 's9_lavender', 0.12], [-0.23, -0.09, 's9_daisy', 0.11], [-0.09, -0.12, 's9_lavender', 0.1],
+  [0.1, -0.115, 's9_daisy', 0.1], [0.215, -0.05, 's9_lavender', 0.11], [-0.42, 0.16, 's9_daisy', 0.1],
+  [0.4, 0.17, 's9_lavender', 0.1], [0.3, 0.1, 's9_daisy', 0.09],
+];
+const FLIGHTS = [
+  { path: bezier([-0.62, -0.02, 0.2], [-0.2, 0.32, 0.44], [0.15, -0.22, 0.17], [0.62, 0.12, 0.3]), start: 3, dur: 9, every: 13 },
+  { path: bezier([0.62, 0.26, 0.36], [0.2, 0.04, 0.12], [-0.2, 0.36, 0.32], [-0.62, 0.0, 0.22]), start: 9.5, dur: 10, every: 14 },
+];
+const CAPTION_LOOP = 40;
 
-export async function build(ctx) {
-  const T = await loadTextures({
-    girl: 'scene9/girl_full.png',
-    hairBack: 'scene9/hair_back.png',
-    bush1: 'scene9/bushflow1.png',
-    bush2: 'scene9/bushflow2.png',
-    bush3: 'scene9/bushflow3.png',
-    petal: 'common/petal.png',
-    snowdot: 'common/snow.png',
-    plane: 'common/paperplane.png',
-    glow: 'common/glow.png',
+async function garden() {
+  const X = new Experience('s9_flower');
+  X.title = 'Scene 9 · The Memory Garden';
+  const g = X.group;
+  const manifest = await loadManifest();
+  const T = await loadTextures({ plane: 'common/paperplane.png', petal: 'common/petal.png', leaf: 'common/leaf.png' });
+  const [girlClip, bushClip] = await Promise.all([X.clip('s9_girl'), X.clip('s9_bush')]);
+  const grow = {};
+  for (const k of ['s9_daisy', 's9_lavender']) grow[k] = { meta: manifest[k], tex: (await loadTexture(manifest[k].file)).tex };
+  X.loops.push({ key: 'girl', url: girlClip.meta.audio, vol: 0.45 }, { key: 'wind', url: bushClip.meta.audio, vol: 0.25 });
+
+  const girl = X.billboard(videoPlane(girlClip, GIRL.h, { reveal: 0, revealColor: 0xffe0b0, renderOrder: 10 }), { smooth: 0.08 });
+  girl.position.set(GIRL.x, GIRL.y, 0);
+  girl.userData.spin.add(contactShadow(0.3, 0.07, 0.25));
+  const bush = X.billboard(videoPlane(bushClip, BUSH.w / bushClip.meta.aspect, { reveal: 0, revealColor: 0xf3ffd6, renderOrder: 12 }), { smooth: 0.08 });
+  bush.position.set(BUSH.x, BUSH.y, 0);
+  bush.userData.spin.add(contactShadow(BUSH.w * 0.95, 0.07, 0.3));
+  g.add(girl, bush);
+  const appear = new AppearFX(g, { x: GIRL.x, y: GIRL.y, height: GIRL.h * 0.6, radius: 0.12, pillar: false, count: 40 });
+
+  const flowers = FLOWERS.map(([x, y, kind, h], i) => {
+    const f = X.billboard(atlasPlane(grow[kind].tex, grow[kind].meta, h, { renderOrder: 8 }));
+    f.position.set(x, y, 0);
+    f.visible = false;
+    g.add(f);
+    return { f, at: 2.2 + i * 0.75, frames: grow[kind].meta.frames, i };
   });
 
-  const g = new THREE.Group();
-
-  // Three frames of the back bushes (cross-fade = wind)
-  const backFrames = [T.bush1, T.bush2, T.bush3].map((a, i) => {
-    const m = cutout(a, 1.06, { renderOrder: 2 + i });
-    m.position.set(0, 0.31, 0);
-    g.add(m);
-    return m;
+  const planes = FLIGHTS.map(() => new PaperPlane(g, T.plane.tex, { size: 0.055 }));
+  const ribbons = [0, 1, 2, 3, 4].map((i) => new WindRibbon(g, bezier(
+    [-0.6, -0.1 + i * 0.08, 0.08 + i * 0.05],
+    [-0.2, 0.1 + i * 0.03, 0.2 + (i % 2) * 0.1],
+    [0.2, -0.05 + i * 0.05, 0.12 + i * 0.04],
+    [0.6, 0.05 + i * 0.04, 0.18 + (i % 3) * 0.05],
+  ), { width: 0.005, len: 0.3, opacity: 0.45 }));
+  const box = { x: [-0.6, 0.6], y: [-0.16, 0.3], z: [0.04, 0.46] };
+  const petals = new Particles(g, {
+    count: 26, map: T.petal.tex, size: [0.011, 0.018], mode: 'across', spin: 1.8, sway: 0.03, swayFreq: 0.7,
+    speed: [0.035, 0.06], colors: [0xffffff, 0xffe9f0, 0xfff6e0], box, seed: 91,
   });
-  // The front row (in front of the girl, like the book itself)
-  const frontFrames = [T.bush2, T.bush3, T.bush1].map((a, i) => {
-    const m = cutout(a, 0.85, { renderOrder: 20 + i });
-    m.position.set(0, -0.17, 0);
-    g.add(m);
-    return m;
+  const leaves = new Particles(g, {
+    count: 9, map: T.leaf.tex, size: [0.012, 0.018], mode: 'across', spin: 2.2, sway: 0.03,
+    speed: [0.04, 0.06], colors: [0xc9e0a0, 0xb5d38a], box, seed: 92,
+  });
+  const motes = new Particles(g, {
+    count: 24, map: TEX.dot(), size: [0.005, 0.012], mode: 'float', additive: true, twinkle: 0.9, sway: 0.03, swayFreq: 0.3,
+    colors: [0xfff4cc, 0xffffff], box: { x: [-0.4, 0.4], y: [-0.12, 0.25], z: [0.03, 0.4] }, seed: 93,
   });
 
-  // The background hair + the girl herself
-  const hair = cutout(T.hairBack, 0.46, { renderOrder: 8 });
-  hair.position.set(0, 0.145, 0);
-  const girl = cutout(T.girl, 0.54, { renderOrder: 9 });
-  girl.position.set(0, 0.13, 0);
-  g.add(hair, girl);
+  X.update = (t, camera) => {
+    X.once('go', t, 0.3, () => { bushClip.play(); girlClip.play(); appear.trigger(t + 0.7); });
+    appear.update(t);
+    bush.userData.mat.uniforms.reveal.value = smooth01((t - 0.3) / 1.8);
+    girl.userData.mat.uniforms.reveal.value = smooth01((t - 1.0) / 1.9);
 
-  // Ambient glows
-  const glows = [];
-  for (let i = 0; i < 3; i++) {
-    const gl = cutout(T.glow, 0.34, { anchor: 'center', renderOrder: 30 });
-    gl.position.set(-0.3 + i * 0.3, 0.1, 0.35);
-    g.add(gl);
-    glows.push(gl);
-  }
+    for (const fl of flowers) {
+      fl.f.visible = t > fl.at;
+      if (!fl.f.visible) continue;
+      const u = fl.f.userData.mat.uniforms;
+      u.frame.value = Math.min(1, (t - fl.at) / 7) * (fl.frames - 1);
+      u.opacity.value = smooth01((t - fl.at) / 0.5);
+      // the wind bends every flower a little, each in its own rhythm
+      u.uBend.value = 0.05 * Math.sin(t * 1.25 + fl.i * 0.9) + 0.02 * Math.sin(t * 2.9 + fl.i);
+    }
 
-  // Paper planes travelling on the wind
-  const planes = [];
-  for (let i = 0; i < 3; i++) {
-    const p = cutout(T.plane, 0.06, { anchor: 'center', renderOrder: 31 });
-    g.add(p);
-    planes.push(p);
-  }
-
-  // Petals at two depths
-  const petalsA = new Drift(g, T.petal, { count: 22, mode: 'across', seed: 91, size: 0.02, speed: 0.055, opacity: 0.9, zRange: [0.08, 0.42], yRange: [-0.15, 0.3] });
-  const petalsB = new Drift(g, T.snowdot, { count: 18, mode: 'float', seed: 92, size: 0.012, opacity: 0.6, zRange: [0.1, 0.4], yRange: [-0.2, 0.3] });
-
-  // Weights of the three frames for a smooth looping cross-fade
-  function frameWeights(t, period) {
-    const ph = (t / period) % 3;
-    return [0, 1, 2].map((i) => {
-      let d = Math.abs(ph - i);
-      d = Math.min(d, 3 - d);
-      return Math.max(0, 1 - d);
+    FLIGHTS.forEach((f, i) => {
+      const local = t < f.start ? -1 : (t - f.start) % f.every;
+      const k = local / f.dur;
+      const vis = local >= 0 && k <= 1 ? Math.min(1, k * 8, (1 - k) * 8) : 0;
+      planes[i].update(t, Math.max(0, Math.min(1, k)), f.path, vis, camera);
     });
-  }
-
-  function update(t) {
-    const tl = t % LOOP;
-
-    // Wind through the bushes: cross-fading frames + a subtle sway
-    const wBack = frameWeights(t, 1.15);
-    const wFront = frameWeights(t + 0.55, 1.35);
-    backFrames.forEach((m, i) => {
-      m.material.opacity = wBack[i];
-      m.rotation.z = 0.008 * Math.sin(t * 0.9 + i);
+    ribbons.forEach((r, i) => {
+      const period = 7 + i * 1.3;
+      const local = ((t + i * 2.1) % period) / 3.2;
+      r.update(local * 1.3, smooth01((t - 2) / 2));
     });
-    frontFrames.forEach((m, i) => {
-      m.material.opacity = wFront[i];
-      m.rotation.z = -0.010 * Math.sin(t * 0.8 + i * 1.3);
-    });
+    const amb = smooth01((t - 1.5) / 2.5);
+    petals.set(amb); petals.update(t);
+    leaves.set(amb); leaves.update(t);
+    motes.set(amb * (0.8 + 0.2 * pulse(t, 5))); motes.update(t);
 
-    // Breathing and the waves of her hair
-    hair.rotation.z = 0.030 * Math.sin(t * 0.65);
-    hair.scale.set(1 + 0.010 * Math.sin(t * 0.65 + 1), 1 + 0.006 * Math.sin(t * 0.5), 1);
-    girl.rotation.z = 0.010 * Math.sin(t * 0.65 + 0.5);
-    girl.scale.y = 1 + 0.005 * Math.sin(t * 0.9);
+    const c = t % CAPTION_LOOP;
+    let msg = '';
+    if (window01(c, 2.5, 4.8, 0.5) > 0.5) msg = 'Days passed. The seeds grew.';
+    else if (window01(c, 14, 5, 0.5) > 0.5) msg = 'Things changed slowly. Quietly.';
+    else if (window01(c, 21, 5.5, 0.5) > 0.5) msg = 'Like the garden. Like me.';
+    X.say(msg);
+  };
+  return X;
+}
 
-    // Glows
-    glows.forEach((gl, i) => {
-      gl.material.opacity = 0.10 + 0.06 * pulse(t + i * 1.2, 5);
-      gl.position.z = 0.32 + 0.05 * Math.sin(t * 0.4 + i * 2);
-    });
+export const STATIONS = { s9_flower: garden };
 
-    // Paper planes: slow, looping journeys
-    planes.forEach((p, i) => {
-      const dur = 9, start = i * 3.2;
-      const k = seg(tl, start, dur, easeInOut);
-      const vis = window01(tl, start, dur, 1.0);
-      const dir = i % 2 === 0 ? 1 : -1;
-      flyOn(p, k,
-        [-0.55 * dir, 0.05 + i * 0.06, 0.14 + i * 0.05],
-        [0, 0.28, 0.34],
-        [0.55 * dir, -0.05 + i * 0.04, 0.18],
-        t + i * 3);
-      p.material.opacity = vis * 0.95;
-    });
-
-    petalsA.update(t);
-    petalsB.update(t);
-
-    caption(window01(tl, 1.2, 4.2, 0.8) > 0.5 ? 'The Memory Garden — where memories stay alive' : '');
-  }
-
-  return { group: g, update };
+export async function popup() {
+  return new THREE.Group();   // everything in this scene is part of the AR layer
 }

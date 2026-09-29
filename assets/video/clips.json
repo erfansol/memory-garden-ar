@@ -1,0 +1,138 @@
+{
+ "s1_spring": {
+  "file": "assets/video/s1_spring.mp4",
+  "w": 1052,
+  "h": 600,
+  "layout": "v",
+  "gap": 8,
+  "fps": 24.0,
+  "duration": 9.25,
+  "aspect": 1.75333,
+  "loop": [
+   0.0,
+   9.25
+  ],
+  "audio": "assets/audio/s1_spring.m4a"
+ },
+ "s1_autumn": {
+  "file": "assets/video/s1_autumn.mp4",
+  "w": 730,
+  "h": 820,
+  "layout": "h",
+  "gap": 8,
+  "fps": 30.0,
+  "duration": 5.767,
+  "aspect": 0.89024,
+  "loop": [
+   0.0,
+   5.767
+  ],
+  "audio": "assets/audio/s1_autumn.m4a"
+ },
+ "s1_winter": {
+  "file": "assets/video/s1_winter.mp4",
+  "w": 606,
+  "h": 960,
+  "layout": "none",
+  "gap": 8,
+  "fps": 24.0,
+  "duration": 5.792,
+  "aspect": 0.63125,
+  "loop": [
+   0.0,
+   5.792
+  ],
+  "audio": "assets/audio/s1_winter.m4a"
+ },
+ "s7_window": {
+  "file": "assets/video/s7_window.mp4",
+  "w": 1186,
+  "h": 520,
+  "layout": "v",
+  "gap": 8,
+  "fps": 24.0,
+  "duration": 4.708,
+  "aspect": 2.28077,
+  "hold": true,
+  "audio": "assets/audio/s7_window.m4a"
+ },
+ "s7_girl": {
+  "file": "assets/video/s7_girl.mp4",
+  "w": 432,
+  "h": 1000,
+  "layout": "h",
+  "gap": 8,
+  "fps": 24.0,
+  "duration": 10.0,
+  "aspect": 0.432,
+  "loop": [
+   7.583,
+   10.0
+  ],
+  "audio": "assets/audio/s7_girl.m4a"
+ },
+ "s8_girl": {
+  "file": "assets/video/s8_girl.mp4",
+  "w": 496,
+  "h": 900,
+  "layout": "h",
+  "gap": 8,
+  "fps": 30.0,
+  "duration": 21.033,
+  "aspect": 0.55111
+ },
+ "s9_girl": {
+  "file": "assets/video/s9_girl.mp4",
+  "w": 750,
+  "h": 780,
+  "layout": "h",
+  "gap": 8,
+  "fps": 24.0,
+  "duration": 9.125,
+  "aspect": 0.96154,
+  "loop": [
+   0.0,
+   9.125
+  ],
+  "audio": "assets/audio/s9_girl.m4a"
+ },
+ "s9_bush": {
+  "file": "assets/video/s9_bush.mp4",
+  "w": 996,
+  "h": 560,
+  "layout": "v",
+  "gap": 8,
+  "fps": 30.0,
+  "duration": 9.0,
+  "aspect": 1.77857,
+  "loop": [
+   0.0,
+   9.0
+  ],
+  "audio": "assets/audio/s9_bush.m4a"
+ },
+ "s9_daisy": {
+  "file": "assets/scene9/daisy_grow.webp",
+  "cols": 8,
+  "rows": 5,
+  "frames": 36,
+  "cell": [
+   274,
+   384
+  ],
+  "aspect": 0.71354,
+  "duration": 8.042
+ },
+ "s9_lavender": {
+  "file": "assets/scene9/lavender_grow.webp",
+  "cols": 9,
+  "rows": 4,
+  "frames": 36,
+  "cell": [
+   190,
+   384
+  ],
+  "aspect": 0.49479,
+  "duration": 8.0
+ }
+}

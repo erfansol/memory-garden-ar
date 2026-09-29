@@ -1,3 +1,5 @@
 node_modules/
 tools/shots*/
+tools/video/preview/
 .DS_Store
+__pycache__/

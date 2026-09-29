@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#efe6d6">
   <title>The Memory Garden — Player</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script type="importmap">
   {
@@ -19,17 +21,40 @@
   <div id="app"></div>
 
   <div id="hud">
-    <a class="back" href="index.html" title="Back to menu">⌂</a>
+    <a class="round" href="index.html" title="Back to the book" aria-label="Back to the book">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
     <div id="scene-title"></div>
+    <div class="spacer"></div>
+    <button id="replay-btn" class="round" hidden title="Play again" aria-label="Play again">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="sound-btn" class="round" title="Sound off" aria-label="Sound" aria-pressed="false">
+      <svg class="off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l4 6M21 9l-4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
   </div>
 
-  <div id="caption"></div>
+  <div id="scan-hint" aria-live="polite">
+    <div class="frame"><span></span><span></span><span></span><span></span></div>
+    <p>Fill the frame with a <strong>Scan Here</strong> icon until it locks on,<br>then move back to see the whole memory</p>
+    <div class="icons"></div>
+  </div>
+
+  <div id="loading" role="status"></div>
+  <div id="caption" aria-live="polite"></div>
 
   <div id="start-overlay">
-    <h1 id="ov-title">The Memory Garden</h1>
-    <p id="ov-sub"></p>
-    <button id="start-btn">Start</button>
-    <p id="err"></p>
+    <div class="ov-card">
+      <div class="ov-leaf" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="56" height="56"><path d="M32 58c0-18 4-30 20-42C36 16 22 26 22 40c0 7 4 13 10 18z" fill="#8fae6b"/><path d="M32 58c-2-14-8-24-20-30 2 14 8 24 20 30z" fill="#b7cf93"/></svg>
+      </div>
+      <h1 id="ov-title">The Memory Garden</h1>
+      <p id="ov-sub"></p>
+      <button id="start-btn">Start the camera</button>
+      <p class="ov-note">Start close to the icon so it locks on, then move back. Keep the page flat and well lit, and look at it at an angle, like a pop-up card.</p>
+      <p id="err"></p>
+    </div>
   </div>
 
   <script type="module" src="js/app.js"></script>

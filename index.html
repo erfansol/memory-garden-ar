@@ -2,76 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6efe3">
   <title>The Memory Garden — AR Pop-Up Book</title>
+  <meta name="description" content="The augmented-reality companion to the pop-up book The Memory Garden.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="menu">
-    <header>
-      <h1>🌿 The Memory Garden</h1>
-      <p>
-        The augmented-reality companion to the pop-up book <em>The Memory Garden</em>.
-        Try each scene in <strong>Preview</strong> right on this device,
-        then use <strong>AR Mode</strong> and point your phone camera at the printed
-        page of the book to watch the memories come alive on paper.
+  <main class="menu">
+    <header class="hero">
+      <p class="eyebrow">An augmented-reality pop-up book</p>
+      <h1>The Memory Garden</h1>
+      <p class="lede">
+        Point your phone at a <strong>Scan Here</strong> icon in the book and the memories
+        step out of the paper: seasons turn, a window opens, seeds are planted, and a garden grows.
       </p>
+      <a class="btn primary big" href="app.html?mode=ar">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>
+        Scan the Book
+      </a>
+      <p class="small">Works in Safari (iPhone) and Chrome (Android) — no app to install.</p>
     </header>
 
-    <div class="cards">
-      <div class="card">
-        <img src="assets/thumbs/scene1.jpg" alt="Scene 1">
+    <section class="cards" aria-label="Scenes">
+      <article class="card">
+        <img src="assets/thumbs/scene1.jpg" alt="Diana and Liam under the autumn tree" loading="lazy">
         <div class="body">
           <h2>Scene 1 — Memories</h2>
-          <p>The classroom; Diana and Liam. Shadow play on the wall and the turning of seasons: summer, autumn rain, and winter snow angels.</p>
+          <p>Three icons, three seasons. Summer shadow games on the wall, the swing in the autumn rain, and snow angels side by side, each arriving with a magical spin.</p>
+          <div class="scan-icons">
+            <img src="targets/s1_spring.jpg" alt="Sunflower icon" title="Sunflower → summer">
+            <img src="targets/s1_autumn.jpg" alt="Umbrellas icon" title="Umbrellas → autumn">
+            <img src="targets/s1_winter.jpg" alt="Snowman icon" title="Snowman → winter">
+          </div>
           <div class="actions">
             <a class="btn ghost" href="app.html?scene=1&mode=preview">Preview</a>
             <a class="btn primary" href="app.html?scene=1&mode=ar">AR Mode</a>
           </div>
         </div>
-      </div>
+      </article>
 
-      <div class="card">
-        <img src="assets/thumbs/scene7.jpg" alt="Scene 7">
+      <article class="card">
+        <img src="assets/thumbs/scene7.jpg" alt="Diana hugging her bunny" loading="lazy">
         <div class="body">
           <h2>Scene 7 — The Doll</h2>
-          <p>A breeze from the window; paper planes drift to the floor. Diana goes to her doll and holds it close: “You are not alone.”</p>
+          <p>The night window opens, a breeze scatters the drawings and a paper plane glides to the bunny. Diana holds it close: “You are not alone.”</p>
+          <div class="scan-icons">
+            <img src="targets/s7_bunny.jpg" alt="Bunny icon" title="Bunny">
+          </div>
           <div class="actions">
             <a class="btn ghost" href="app.html?scene=7&mode=preview">Preview</a>
             <a class="btn primary" href="app.html?scene=7&mode=ar">AR Mode</a>
           </div>
         </div>
-      </div>
+      </article>
 
-      <div class="card">
-        <img src="assets/thumbs/scene8.jpg" alt="Scene 8">
+      <article class="card">
+        <img src="assets/thumbs/scene8.jpg" alt="Diana planting a seed" loading="lazy">
         <div class="body">
           <h2>Scene 8 — Planting Seeds</h2>
-          <p>Three seeds, three quiet promises for Liam; and a garden that grows a little taller with every remembering.</p>
+          <p>Three seeds, three quiet promises. Each one answers with a soft light and a tiny sprout, and at the end they all grow into flowers.</p>
+          <div class="scan-icons">
+            <img src="targets/s8_hole.jpg" alt="Seed hole icon" title="Seed hole">
+          </div>
           <div class="actions">
             <a class="btn ghost" href="app.html?scene=8&mode=preview">Preview</a>
             <a class="btn primary" href="app.html?scene=8&mode=ar">AR Mode</a>
           </div>
         </div>
-      </div>
+      </article>
 
-      <div class="card">
-        <img src="assets/thumbs/scene9.jpg" alt="Scene 9">
+      <article class="card">
+        <img src="assets/thumbs/scene9.jpg" alt="Diana in the memory garden" loading="lazy">
         <div class="body">
           <h2>Scene 9 — The Memory Garden</h2>
-          <p>A poetic ending: wind moves through the flowering bushes, hair sways, and paper planes float gently across the air.</p>
+          <p>A calm, breathing ending: wind in her hair and in the flowers, new blossoms growing around the page, and paper planes drifting by.</p>
+          <div class="scan-icons">
+            <img src="targets/s9_flower.jpg" alt="Flower bush icon" title="Flower bush">
+          </div>
           <div class="actions">
             <a class="btn ghost" href="app.html?scene=9&mode=preview">Preview</a>
             <a class="btn primary" href="app.html?scene=9&mode=ar">AR Mode</a>
           </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
 
     <footer>
-      AR Mode needs camera access and only works over HTTPS (or localhost).<br>
-      For best tracking, keep the book page flat and well lit in front of the camera.
+      <p><strong>No printed book at hand?</strong> Open the <a href="targets.html">test pages</a> on a computer screen (or print them) and scan them with your phone.</p>
+      <p>AR Mode needs camera access and works over HTTPS. For best tracking keep the page flat, well lit, and hold the phone at an angle.</p>
     </footer>
-  </div>
+  </main>
 </body>
 </html>

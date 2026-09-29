@@ -1,99 +1,113 @@
 # 🌿 The Memory Garden — AR Companion for the Pop-Up Book
 
-This project is the digital layer of the pop-up book **The Memory Garden**: a WebAR app that runs **in the mobile browser with no app install**. Point the camera at a printed page of the book and the memories come alive as an animated paper diorama sitting right on the page.
+The digital layer of the pop-up book **The Memory Garden**: a WebAR app that runs **in the mobile browser with no app install**. Point the phone at a **Scan Here** icon printed in the book and that page's animated memory steps out of the paper, anchored to the page, with light, weather and particle effects around it.
 
-Four scenes are implemented, following the AR script in `Description.pdf`:
+**Live:** https://erfansol.github.io/memory-garden-ar/
 
-| Scene | Story beat | What you see in AR |
+| Scene | Scan Here icon | What happens in AR |
 |---|---|---|
-| 1 — Memories | Diana and Liam's classroom | The children pop out with their desks, shadow play on the wall, and the turning seasons (summer petals, autumn leaves and rain, winter snow and glowing snow angels) with a Sims-style spin between seasons |
-| 7 — The Doll | Diana's bedroom | A breeze from the night window, paper planes and pages drifting down, Diana moving to her doll, the hug, and the message "You are not alone." |
-| 8 — Planting Seeds | The school garden | Three seeds planted with three remembrance lines, sprouts appearing, and the garden growing stage by stage (using the book's own Small/Medium/Tall artworks) |
-| 9 — The Memory Garden | The poetic ending | Wind moving through the flowering bushes (cross-faded BushFlow frames), swaying hair, floating petals and travelling paper planes |
+| 1 — Memories | 🌻 sunflower | **Summer.** Diana and Liam (seen from behind) play with their shadows; the shadows move on the wall in front of them. Golden motes and petals drift by. |
+| | ☂️ umbrellas | **Autumn.** The two of them on the swing under the maple tree, with soft rain, falling leaves and ripples on the puddles. |
+| | ⛄ snowman | **Winter.** Two snow angels in a patch of snow lying on the page, with snowfall and glints. Every season arrives with a Sims-style spin, a beam of light and a burst of sparkles. |
+| 7 — The Doll | 🐰 bunny | The night window opens, a breeze carries Diana's drawings to the floor, and a paper plane glides to the bunny. A path of light leads to the rug, where Diana appears holding the bunny, sits and hugs it: *“You are not alone.”* / *“I am here. You can rest now.”* |
+| 8 — Planting Seeds | 🕳️ seed hole | Diana steps out of the bushes and plants three seeds. Each one answers with a soft light, a sprout and one of the three remembrance lines, and leaves a small mound behind (sparkles, lavender petals, gentle rain). At the end the three sprouts grow into flowers: *“After that, I planted more.”* |
+| 9 — The Memory Garden | 💐 flower bush | A calm, looping ending: wind in Diana's long hair and in the flowering bush, new flowers growing all over the page, and paper planes drifting across with dotted trails, among petals and leaves. |
+
+All characters are the animation videos from `Final Animations`, with their backgrounds removed (see below).
 
 ---
 
-## ▶️ Quick start on this computer (Preview, no camera)
-
-1. Open a terminal in the project folder:
+## ▶️ Try it on this computer (Preview, no camera)
 
 ```bash
-cd ~/Downloads/Farnaz_Memory_Garden/memory-garden-ar
+cd "/Volumes/Erfan SSD/01_Projects/farnaz/memory-garden-ar"
 python3 -m http.server 8642
 ```
 
-2. Open **http://localhost:8642** in the browser.
+Open **http://localhost:8642** and press **Preview** on any scene. Drag to orbit, scroll to zoom, and press ⟲ to replay. The paper pop-up pieces (walls, bed, bushes) are shown as stand-ins, so this mode is also good for showing the project on a projector.
 
-3. Press **Preview** on any scene. Drag to orbit, scroll to zoom. This mode is perfect for development and for showing the scenes on a projector during your presentation.
+## 📱 On the phone (real AR)
 
-> AR Mode also works on this computer with the webcam: hold the printed page (or even a photo of the page on your phone) in front of the camera.
+1. Open **https://erfansol.github.io/memory-garden-ar/** in Safari (iPhone) or Chrome (Android).
+2. Press **Scan the Book** (or **AR Mode** on a scene) → **Start the camera** → allow the camera.
+3. Point the camera at a **Scan Here** icon. Frame the icon first so it locks on, then move back to see the whole page.
 
-## 📱 Running on a phone (real AR)
+No printed book at hand? Open **Test pages** (`targets.html`) on a computer screen or print them, and scan those.
 
-Mobile browsers require **HTTPS** for camera access. The easiest free option is GitHub Pages:
+Tips: keep the page flat and well lit, and hold the phone at an angle, the way you would look at a pop-up card. Sound is off by default; the speaker button turns on each memory's soundtrack.
 
-1. Create a new GitHub repository (e.g. `memory-garden-ar`).
-2. Push this folder to it (`node_modules` and `tools/shots*` are not needed):
+After any change, publish again with:
 
 ```bash
-cd ~/Downloads/Farnaz_Memory_Garden/memory-garden-ar
-git init
-printf "node_modules/\ntools/shots*/\n" > .gitignore
-git add . && git commit -m "Memory Garden WebAR"
-git branch -M main
-git remote add origin https://github.com/USERNAME/memory-garden-ar.git
-git push -u origin main
+git add -A && git commit -m "…" && git push
 ```
 
-3. In the repo: **Settings → Pages → Branch: main → Save**. After a minute or two you get:
-`https://USERNAME.github.io/memory-garden-ar/`
-
-4. Open that address on the phone → pick a scene → **AR Mode** → point the camera at the printed page of that scene.
-
-Tips for good tracking:
-- Keep the page **flat and well lit**; frame the whole page first so the tracker can lock on.
-- Hold the phone **at an angle** (the way you would look at a pop-up card), not straight down — the cutouts stand upright on the page.
-- The tracking target for each scene is the flat printed artwork of that page (`targets/sceneX.jpg`). If you don't have the printed book at hand, you can print those images or even display them on another screen.
+GitHub Pages redeploys the same link in a minute or two.
 
 ## 🗂 Project structure
 
 ```
 memory-garden-ar/
-├── index.html            main menu
-├── app.html              scene player (preview / ar via URL params)
-├── css/style.css         styles
+├── index.html · app.html · targets.html   menu, player, printable test pages
+├── css/style.css
 ├── js/
-│   ├── app.js            bootstraps both modes
-│   ├── engine.js         engine: paper cutouts, particles, timing, captions
-│   └── scenes/scene{1,7,8,9}.js   per-scene animation (pure functions of time → loopable)
-├── assets/               processed art (cropped, background-removed, optimized)
-├── targets/              target images + targets.mind (compiled tracking data)
-├── libs/                 Three.js and MindAR served locally (no CDN)
-└── tools/                build & test scripts
-    ├── prepare-assets.mjs   builds assets from the raw book files
-    ├── fix-alpha.mjs        background removal via flood fill
-    ├── compile-targets.mjs  builds targets.mind (offline MindAR compiler)
-    ├── test-preview.mjs     automated test of all 4 scenes + screenshots
-    └── test-ar-track.mjs    AR tracking test with a simulated camera
+│   ├── app.js        Preview (orbit camera) and AR (MindAR) modes, one anchor per icon
+│   ├── layout.js     page geometry + the six icons (where each sits on its page)
+│   ├── video.js      transparent video: packed-alpha shader, dissolve, shadow, vignette, sway
+│   ├── fx.js         particles, light rings/pillars, wind ribbons, paper planes, billboarding
+│   ├── stage.js      Experience base class (timeline, pause/resume on tracking loss) + appear FX
+│   ├── sound.js      optional Web Audio soundtrack
+│   └── scenes/scene{1,7,8,9}.js
+├── assets/video/     transparent clips (*.mp4) + clips.json (layout, loop points)
+├── assets/audio/     soundtracks
+├── assets/sceneN/    ground pages, pop-up stand-ins, flower growth atlases, planted mound
+├── targets/          the six icons + targets.mind (compiled tracking data)
+├── libs/             Three.js r147 + MindAR 1.2.5 (served locally, no CDN)
+└── tools/            build and test scripts
 ```
 
-## 🛠 Editing and extending
+Scene content is authored in **page units**: the open spread is 1 unit wide, the origin is its centre, X points right, Y towards the top edge of the page and Z up out of the paper. `layout.js` maps page units onto each icon, so a memory appears in the right place on the page whichever icon is scanned. Positions and sizes are the constants at the top of each `js/scenes/sceneN.js`.
 
-- **Move/adjust scene elements**: coordinates live in `js/scenes/*.js`. Units are relative to the page width (=1); X is right, Y is depth, Z is height above the paper.
-- **Change the messages**: the `MSGS` array (scene 8) and the `caption(...)` strings in each scene.
-- **Rebuild assets** after changing the raw art: `node tools/prepare-assets.mjs && node tools/fix-alpha.mjs`
-- **Rebuild tracking targets** (if the printed page designs change): `node tools/compile-targets.mjs`
-- **Automated tests**: `node tools/test-preview.mjs` (requires `npm i playwright` and the server running on port 8642)
+## 🎞 How the transparent videos are made
+
+`tools/video/build_videos.py` reads the raw animations from `../Final Animations` and writes `assets/video/*.mp4`. Each output is an ordinary H.264 video with the **colour and the alpha mask packed side by side**, so it plays on every phone (iPhone Safari included), and `js/video.js` recombines them on the GPU. The background is removed with a method chosen for each video:
+
+| Clip | Source background | Method |
+|---|---|---|
+| summer kids, window | green screen | chroma key + edge colour model + despill; enclosed green details (palm trees on the shirt) are kept |
+| Scene 7 girl, growing flowers | magenta screen | same, magenta key (its own soft shadow is removed too) |
+| autumn swing | the same animation rendered on grey **and** on white | exact difference matting |
+| Scene 8 girl | on white + on black | white version keyed; the black version marks what is certainly character (white shirt, sneakers) |
+| Scene 9 girl, bush | off-white paper (flickering) | per-frame background model; an illustration segmentation model (isnet-anime) decides which enclosed white areas belong to her (collar, daisies) |
+| winter angels | snow | kept as a patch; the shader melts its edges into the page |
+
+Loops are made seamless by cross-fading the end into the beginning; Scene 7 plays the sitting-down once and then loops the hug. The growing flowers become sprite-sheet atlases, so any number can grow at once without extra video decoders.
+
+Rebuild (≈15 min; needs ffmpeg, `pip install numpy opencv-python-headless pillow "rembg[cpu]"`):
+
+```bash
+python3 tools/video/build_videos.py            # everything
+python3 tools/video/build_videos.py s7_girl    # one clip
+python3 tools/video/build_videos.py --preview  # key a few frames → tools/video/preview/
+python3 tools/prepare_pages.py                 # icons + ground pages from Final Animations
+node tools/compile-targets.mjs                 # icons → targets/targets.mind
+```
+
+For the Node tools run `npm install --ignore-scripts` (the native `canvas` package that mind-ar lists is not needed; the compiler script feeds pixels directly).
+
+## 🧪 Tests
+
+```bash
+node tools/test-preview.mjs              # every scene in Chrome: errors + screenshots in tools/shots/
+node tools/test-preview.mjs 8 5,20,40    # scene 8 at 5 s, 20 s and 40 s
+node tools/test-ar.mjs                   # real tracking with a simulated camera showing the test pages
+```
 
 ## ⚠️ Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| Camera won't open | The URL must be https or localhost; grant camera permission in the browser settings |
-| Target never locks | More light, flatter page, frame the whole page first; avoid casting hand shadows on it |
-| Scene looks edge-on / invisible | Tilt the phone; don't look straight down at the page |
-| Runs slowly | Close other tabs; on older phones reduce particle counts in `js/scenes` |
-
----
-
-Built with Three.js + MindAR (open source and free) — every asset comes from the book's own artwork.
+| Camera does not open | The address must be https (or localhost); allow the camera in the browser settings |
+| Icon never locks | More light, flatter page; fill the screen with the icon first, then move back |
+| Memory looks edge-on | Characters turn to face you; the flat winter patch is best seen from above at an angle |
+| Slow on an older phone | Close other tabs; lower the particle `count` values in `js/scenes` |

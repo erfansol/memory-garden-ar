@@ -1,13 +1,14 @@
 {
   "name": "memory-garden-ar",
   "version": "1.0.0",
-  "description": "WebAR companion for the Memory Garden pop-up book",
-  "main": "index.js",
+  "description": "WebAR companion for the pop-up book The Memory Garden",
   "scripts": {
     "serve": "python3 -m http.server 8642",
-    "assets": "node tools/prepare-assets.mjs && node tools/fix-alpha.mjs",
+    "videos": "python3 tools/video/build_videos.py",
+    "pages": "python3 tools/prepare_pages.py",
     "targets": "node tools/compile-targets.mjs",
-    "test": "node tools/test-preview.mjs"
+    "test": "node tools/test-preview.mjs",
+    "test:ar": "node tools/test-ar.mjs"
   },
   "keywords": [],
   "author": "",
