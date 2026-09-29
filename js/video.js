@@ -110,6 +110,16 @@ export class VideoClip {
     this.play(rate);
   }
 
+  // how high (fraction of the clip height) the lowest visible point is at time t
+  baseAt(t = this.video.currentTime) {
+    const b = this.meta.base;
+    if (!b) return 0;
+    const f = Math.max(0, t) / b.dt;
+    const i = Math.min(b.v.length - 1, Math.floor(f));
+    const j = Math.min(b.v.length - 1, i + 1);
+    return b.v[i] + (b.v[j] - b.v[i]) * (f - i);
+  }
+
   get time() { return this.video.currentTime; }
   get duration() { return this.meta.duration; }
   get ended() { return this.video.ended || this.video.currentTime >= this.meta.duration - 0.05; }
@@ -292,8 +302,18 @@ export function videoPlane(clip, height, opts = {}) {
   spin.add(mesh);
   const pivot = new THREE.Group();
   pivot.add(spin);
-  pivot.userData = { mesh, mat, width, height, clip, spin };
+  // sink: extra fraction pushed below the paper (and hidden), for art whose painted
+  // ground would otherwise read as a floating strip when the picture stands upright
+  pivot.userData = { mesh, mat, width, height, clip, spin, sink: opts.sink ?? 0 };
   return pivot;
+}
+
+// Keeps a standing video cut-out on the paper: its lowest visible point touches z = 0
+export function groundTick(pivot) {
+  const { mesh, mat, height, clip, sink } = pivot.userData;
+  const s = clip.baseAt() + sink;
+  mesh.position.z = -s * height;
+  if (sink > 0) mat.uniforms.clipLow.value = s;
 }
 
 /* ------------------------------------------------------------------ */

@@ -74,7 +74,8 @@ async function doll() {
   const touch = new AppearFX(g, { x: SCAN_ME[0], y: SCAN_ME[1], height: 0.04, radius: 0.03, pillar: false, count: 18 });
 
   /* 5. Diana, her doll, and her words */
-  const girl = X.billboard(videoPlane(girlClip, GIRL_H, { reveal: 0, revealColor: 0xffe2b0, renderOrder: 12 }));
+  // fixed on the rug, facing the reader; kept on the paper even when she sits down
+  const girl = X.ground(videoPlane(girlClip, GIRL_H, { reveal: 0, revealColor: 0xffe2b0, renderOrder: 12 }));
   girl.position.set(RUG.x, RUG.y, 0);
   girl.visible = false;
   girl.userData.spin.add(contactShadow(0.1, 0.035, 0.4));
@@ -100,7 +101,7 @@ async function doll() {
     moon.material.opacity = smooth01((t - 3.8) / 1.5) * (0.55 + 0.25 * pulse(t, 3.5));
 
     // 2
-    X.once('wind', t, T_WIND, () => sound.wind(6.5, 0.55));
+    X.once('wind', t, T_WIND, () => sound.wind(6.5, 0.28));
     breeze.forEach((r, i) => {
       const s = T_WIND + i * 0.4 + (i % 2) * 1.9;
       r.update(((t - s) / 2.2) * 1.42, window01(t, T_WIND, 6, 0.5));

@@ -1,7 +1,8 @@
-// Scene 9 — "The Memory Garden": a calm, looping ending. Diana and the flowering bush
-// move in the wind. A paper plane glides in from the left and out to the right, and
-// along its path blue and violet flowers grow one after another; once grown they keep
-// swaying gently in the breeze.
+// Scene 9 — "The Memory Garden": a calm, looping ending. The flowering bush is already
+// there when the page is scanned; Diana appears among it and both move in the wind.
+// A paper plane glides in from the left and out to the right, and along its path white
+// and blue flowers (one after the other) grow in front of the bush, then keep swaying
+// gently. Everything stands fixed on the paper, facing the reader.
 import * as THREE from 'three';
 import { loadTextures, loadTexture, window01, smooth01, pulse } from '../engine.js';
 import { videoPlane, atlasPlane, loadManifest } from '../video.js';
@@ -12,11 +13,13 @@ const GIRL = { x: 0.0, y: 0.08, h: 0.4 };
 const BUSH = { x: 0.0, y: 0.025, w: 0.56 };
 // the paper plane's flight: in from the left edge, low over the page, out on the right
 const FLIGHT = { path: bezier([-0.7, -0.03, 0.24], [-0.3, -0.24, 0.07], [0.12, 0.03, 0.25], [0.7, -0.13, 0.2]), start: 2.5, dur: 10, every: 30 };
-// flowers along the plane's path (x, y, height, blue shift); clear of the text and the icon
+// flowers along the plane's path, alternating white daisies and blue flowers
+// [x, y, height, kind]; in front of the bush and clear of the text and the icon
 const FLOWERS = [
-  [-0.4, -0.075, 0.12, 0.0], [-0.24, -0.1, 0.11, 0.8], [-0.075, -0.09, 0.12, 0.3],
-  [0.1, -0.08, 0.11, 0.9], [0.235, -0.105, 0.12, 0.2],
+  [-0.4, -0.075, 0.12, 'white'], [-0.24, -0.1, 0.11, 'blue'], [-0.075, -0.1, 0.11, 'white'],
+  [0.1, -0.095, 0.11, 'blue'], [0.235, -0.105, 0.12, 'white'],
 ];
+const KINDS = { white: { atlas: 's9_daisy', blueShift: 0 }, blue: { atlas: 's9_lavender', blueShift: 0.9 } };
 const GROW = 6;            // seconds to grow
 const CAPTION_LOOP = 40;
 
@@ -27,14 +30,16 @@ async function garden() {
   const manifest = await loadManifest();
   const T = await loadTextures({ plane: 'common/paperplane.png', petal: 'common/petal.png', leaf: 'common/leaf.png' });
   const [girlClip, bushClip] = await Promise.all([X.clip('s9_girl'), X.clip('s9_bush')]);
-  const lav = { meta: manifest.s9_lavender, tex: (await loadTexture(manifest.s9_lavender.file)).tex };
+  const atlas = {};
+  for (const k of ['s9_daisy', 's9_lavender']) atlas[k] = { meta: manifest[k], tex: (await loadTexture(manifest[k].file)).tex };
   X.loops.push({ key: 'girl', url: girlClip.meta.audio, vol: 0.45 }, { key: 'wind', url: bushClip.meta.audio, vol: 0.25 });
 
-  // Diana and the bush (both loop)
-  const girl = X.billboard(videoPlane(girlClip, GIRL.h, { reveal: 0, revealColor: 0xffe0b0, renderOrder: 10 }), { smooth: 0.08 });
+  // Diana and the bush (both loop), standing on the paper; she is partly hidden by the
+  // bush, so her painted ground is sunk below the paper (sink) to bring her down to it
+  const girl = X.ground(videoPlane(girlClip, GIRL.h, { reveal: 0, revealColor: 0xffe0b0, renderOrder: 10, sink: 0.06 }));
   girl.position.set(GIRL.x, GIRL.y, 0);
   girl.userData.spin.add(contactShadow(0.3, 0.07, 0.25));
-  const bush = X.billboard(videoPlane(bushClip, BUSH.w / bushClip.meta.aspect, { reveal: 0, revealColor: 0xf3ffd6, renderOrder: 12 }), { smooth: 0.08 });
+  const bush = X.ground(videoPlane(bushClip, BUSH.w / bushClip.meta.aspect, { reveal: 1, renderOrder: 12, sink: 0.02 }));
   bush.position.set(BUSH.x, BUSH.y, 0);
   bush.userData.spin.add(contactShadow(BUSH.w * 0.95, 0.07, 0.3));
   g.add(girl, bush);
@@ -42,13 +47,15 @@ async function garden() {
 
   // the paper plane and the flowers it wakes up
   const plane = new PaperPlane(g, T.plane.tex, { size: 0.055 });
-  const flowers = FLOWERS.map(([x, y, h, blue], i) => {
-    const f = X.billboard(atlasPlane(lav.tex, lav.meta, h, { renderOrder: 8, blueShift: blue }));
+  const flowers = FLOWERS.map(([x, y, h, kind], i) => {
+    const A = atlas[KINDS[kind].atlas];
+    // drawn after the bush, so the bush stays behind the flowers
+    const f = atlasPlane(A.tex, A.meta, h, { renderOrder: 16, blueShift: KINDS[kind].blueShift });
     f.position.set(x, y, 0);
     f.visible = false;
     g.add(f);
     const puff = new Particles(g, { count: 12, map: TEX.star(), size: [0.007, 0.014], mode: 'burst', additive: true, center: [x, y, 0.02], burstSpeed: [0.02, 0.05], life: [0.7, 1.2], colors: [0xffffff, 0xdcd6ff] });
-    return { f, x, i, puff, at: null };
+    return { f, x, i, puff, at: null, frames: A.meta.frames };
   });
 
   // a light breeze: streaks of air, petals, leaves and floating specks of light
@@ -75,10 +82,10 @@ async function garden() {
   X.onRestart = () => flowers.forEach((fl) => { fl.at = null; fl.f.visible = false; });
 
   X.update = (t, camera) => {
-    X.once('go', t, 0.3, () => { bushClip.play(); girlClip.play(); appear.trigger(t + 0.7); });
+    // the bush is there from the first moment; only Diana appears
+    X.once('go', t, 0.05, () => { bushClip.play(); girlClip.play(); appear.trigger(t + 0.4); });
     appear.update(t);
-    bush.userData.mat.uniforms.reveal.value = smooth01((t - 0.3) / 1.8);
-    girl.userData.mat.uniforms.reveal.value = smooth01((t - 1.0) / 1.9);
+    girl.userData.mat.uniforms.reveal.value = smooth01((t - 0.5) / 1.9);
 
     // the plane crosses the page (first at 2.5 s, then every 30 s)
     const local = t < FLIGHT.start ? -1 : (t - FLIGHT.start) % FLIGHT.every;
@@ -95,7 +102,7 @@ async function garden() {
       fl.f.visible = fl.at !== null;
       if (!fl.f.visible) continue;
       const u = fl.f.userData.mat.uniforms;
-      const last = lav.meta.frames - 1;
+      const last = fl.frames - 1;
       const age = t - fl.at;
       // grow, then keep gently moving through the last few frames
       u.frame.value = age < GROW ? (age / GROW) * last : last - 6 * pulse(age - GROW, 4.5 + fl.i * 0.4);

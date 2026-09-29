@@ -429,6 +429,8 @@ def main():
     if not args or 's8_girl' in args:
         import extract_planted
         extract_planted.main()
+    import measure_base      # where each clip touches the ground, frame by frame
+    measure_base.main()
     print('manifest ->', manifest_path)
 
 

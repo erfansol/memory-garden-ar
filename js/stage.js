@@ -1,7 +1,7 @@
 // Building blocks shared by every AR "experience" (one per printed Scan Here icon)
 import * as THREE from 'three';
 import { Clock, clamp01, easeOut, smooth01 } from './engine.js';
-import { VideoClip, loadManifest } from './video.js';
+import { VideoClip, loadManifest, groundTick } from './video.js';
 import { Particles, GroundRing, LightPillar, TEX, faceCamera } from './fx.js';
 import { sound } from './sound.js';
 
@@ -15,6 +15,7 @@ export class Experience {
     this.resumeList = [];
     this.loops = [];            // ambient sound loops: [{ key, url, vol }]
     this.billboards = [];       // standing pivots that turn towards the viewer
+    this.grounded = [];         // video cut-outs kept standing on the paper
     this.started = false;
     this.lostAt = 0;
     this.msg = '';
@@ -35,6 +36,12 @@ export class Experience {
       this.fired.add(key);
       fn();
     }
+  }
+
+  // keep a standing video cut-out's lowest point on the paper, frame by frame
+  ground(pivot) {
+    this.grounded.push(pivot);
+    return pivot;
   }
 
   billboard(pivot, opts = {}) {
@@ -80,6 +87,7 @@ export class Experience {
     const t = this.clock.tick();
     for (const c of this.clips) c.tick();
     for (const [p, o] of this.billboards) faceCamera(p, camera, o);
+    for (const p of this.grounded) groundTick(p);
     this.update(t, camera);
   }
 

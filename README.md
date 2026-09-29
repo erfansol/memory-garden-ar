@@ -6,12 +6,12 @@ The digital layer of the pop-up book **Where Memories Grow**, written, illustrat
 
 | Scene | Scan Here icon | What happens in AR |
 |---|---|---|
-| 1 — Memories | 🌻 sunflower | **Summer.** Diana and Liam (seen from behind) play with their shadows; the shadows move on the wall in front of them. Golden motes and petals drift by. |
-| | ☂️ umbrellas | **Autumn.** The two of them on the swing under the maple tree, with soft rain, falling leaves and ripples on the puddles. |
-| | ⛄ snowman | **Winter.** Two snow angels in a patch of snow lying on the page, with snowfall and glints. Every season arrives with a Sims-style spin, a beam of light and a burst of sparkles. |
+| 1 — Memories | 🌻 sunflower | **Summer.** Beside the right wall of the classroom pop-up, Diana and Liam (seen from behind) play with their shadows, which move on the outside of the wall. Golden motes and petals drift by. |
+| | ☂️ umbrellas | **Autumn.** Behind the back wall (seen from the top edge of the book), the two of them on the swing under the maple tree, with soft rain, falling leaves and ripples on the puddles. |
+| | ⛄ snowman | **Winter.** Two snow angels in a patch of snow lying over the printed angel outlines, with snowfall and glints. Every season arrives with a Sims-style spin, a beam of light and a burst of sparkles; afterwards everything stays fixed to the paper and the walls. |
 | 7 — The Doll | 🐰 bunny | 1. the window opens → 2. the wind blows (with a wind sound) → 3. the drawings on the desk are blown to the floor → 4. a paper plane flies out of the window and lands on the Scan Me bunny → 5. Diana appears standing in the middle with her doll, sits down and plays with it; *When your feelings become too heavy, you can hold something soft to help you feel safe.* appears above her head, and the sitting and playing loops. |
 | 8 — Planting Seeds | 🕳️ seed hole | Diana appears three times in three places on the page and plants a seed (the same animation), first among falling flower petals, then orange autumn leaves, then snow. While she kneels to plant, a line appears above her head (*When a memory feels close, you can plant a seed for it.* / *You can do it once, or again, whenever the feeling returns.* / *There is no wrong way to remember; you can take the time and space you need.*). Each seed answers with a soft light and a sprout, and the planted mound stays behind. |
-| 9 — The Memory Garden | 💐 flower bush | Diana and the flowering bush loop in the wind. A paper plane glides in from the left and out to the right, and along its path five blue and violet flowers grow one after another, then keep swaying gently. |
+| 9 — The Memory Garden | 💐 flower bush | The flowering bush is there from the start and Diana appears among it; both loop in the wind. A paper plane glides in from the left and out to the right, and along its path five flowers, white and blue in turn, grow in front of the bush, then keep swaying gently. |
 
 All characters are the animation videos from `Final Animations`, with their backgrounds removed (see below).
 
@@ -24,7 +24,7 @@ cd "/Volumes/Erfan SSD/01_Projects/farnaz/memory-garden-ar"
 python3 -m http.server 8642
 ```
 
-Open **http://localhost:8642** and press **Preview** on any scene. Drag to orbit, scroll to zoom, and press ⟲ to replay. The paper pop-up pieces (walls, bed, bushes) are shown as stand-ins, so this mode is also good for showing the project on a projector.
+Open **http://localhost:8642** and press **Preview** on any scene. Drag to orbit, scroll to zoom, and press ⟲ to replay. The paper pop-up pieces are shown as stand-ins (the classroom folded into three walls from the print sheet, the bedroom wall, desk and bed, and Farnaz's three bush layers), so this mode is also good for showing the project on a projector. Characters and flowers are fixed to the page like paper cut-outs: they do not turn to follow the camera.
 
 ## 📱 On the phone (real AR)
 
@@ -90,6 +90,8 @@ python3 tools/video/build_videos.py            # everything
 python3 tools/video/build_videos.py s7_girl    # one clip
 python3 tools/video/build_videos.py --preview  # key a few frames → tools/video/preview/
 python3 tools/prepare_pages.py                 # icons + ground pages from Final Animations
+python3 tools/prepare_wall.py                  # Scene 1 classroom wall from the print sheet
+python3 tools/video/measure_base.py            # where each clip touches the ground (runs after a build)
 node tools/compile-targets.mjs                 # icons → targets/targets.mind
 ```
 

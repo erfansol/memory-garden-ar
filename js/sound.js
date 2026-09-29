@@ -108,10 +108,10 @@ Sound.prototype.wind = function (dur = 6, vol = 0.5) {
   const bp = ctx.createBiquadFilter();
   bp.type = 'bandpass';
   bp.Q.value = 0.7;
-  bp.frequency.setValueAtTime(280, t0);
-  bp.frequency.linearRampToValueAtTime(950, t0 + dur * 0.35);
-  bp.frequency.linearRampToValueAtTime(520, t0 + dur * 0.7);
-  bp.frequency.linearRampToValueAtTime(300, t0 + dur);
+  bp.frequency.setValueAtTime(240, t0);
+  bp.frequency.linearRampToValueAtTime(700, t0 + dur * 0.35);
+  bp.frequency.linearRampToValueAtTime(420, t0 + dur * 0.7);
+  bp.frequency.linearRampToValueAtTime(260, t0 + dur);
   const g = ctx.createGain();
   g.gain.setValueAtTime(0, t0);
   g.gain.linearRampToValueAtTime(vol, t0 + dur * 0.25);

@@ -37,7 +37,8 @@ async function planting() {
   const T = await loadTextures({ planted: 'scene8/planted.png', petal: 'common/petal.png', leaf: 'common/leaf.png', snow: 'common/snow.png' });
   const clip = await X.clip('s8_girl');
 
-  const girl = X.billboard(videoPlane(clip, H, { reveal: 0, revealColor: 0xffe7b8, renderOrder: 14 }));
+  // fixed, facing the reader (a paper cut-out does not turn to follow the camera)
+  const girl = videoPlane(clip, H, { reveal: 0, revealColor: 0xffe7b8, renderOrder: 14 });
   const gm = girl.userData.mat.uniforms;
   girl.userData.spin.add(contactShadow(0.1, 0.03, 0.35));
   girl.visible = false;
@@ -46,7 +47,7 @@ async function planting() {
   const stations = SPOTS.map((s) => {
     const [x, y] = s.p;
     const appear = new AppearFX(g, { x, y, height: H * 0.7, radius: 0.06 });
-    const planted = X.billboard(new THREE.Group());
+    const planted = new THREE.Group();
     planted.add(cutout(T.planted, H * clip.meta.aspect, { renderOrder: 10 }));
     planted.position.set(x, y, 0);
     planted.visible = false;
@@ -100,7 +101,7 @@ async function planting() {
       });
       X.once('seed' + i, t, play + V_SEED, () => { st.seedBurst.trigger(t); st.ring.trigger(t, st.x, st.y); });
       // when she is done, the mound + sprout stay while she fades into light
-      X.once('leave' + i, t, end, () => { st.planted.visible = true; st.planted.rotation.copy(girl.rotation); });
+      X.once('leave' + i, t, end, () => { st.planted.visible = true; });
       if (i === cur) {
         reveal = st.appear.reveal(t, 0.05, 1.2) * (1 - smooth01((t - end) / 1.3));
         if (t >= end) clipLow = MOUND_V;
@@ -130,11 +131,13 @@ async function planting() {
 
 export const STATIONS = { s8_hole: planting };
 
-/* ---------------- preview stand-ins: the three layers of paper bushes ---------------- */
+/* ---------------- preview stand-ins: the three layers of paper bushes ----------------
+   Farnaz's 08_Bush1-3, from small (front) to large (back); the largest spans the whole
+   width of the open book. */
 export async function popup() {
-  const T = await loadTextures({ s: 'scene8/bush_small.png', m: 'scene8/bush_medium.png', l: 'scene8/bush_tall.png' });
+  const T = await loadTextures({ b1: 'scene8/bush1.webp', b2: 'scene8/bush2.webp', b3: 'scene8/bush3.webp' });
   const g = new THREE.Group();
-  const layers = [[T.l, 0.62, 0.285], [T.m, 0.44, 0.17], [T.s, 0.3, 0.075]];
+  const layers = [[T.b1, 1.0, 0.3], [T.b2, 0.74, 0.215], [T.b3, 0.5, 0.135]];   // [art, width, base line y]
   layers.forEach(([a, w, y], i) => {
     const c = cutout(a, w, { renderOrder: 1 + i });
     c.position.set(0, y, 0);

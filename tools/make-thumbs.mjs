@@ -4,9 +4,9 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const SHOTS = [
-  { scene: 1, t: 10, cam: '0.3,-0.66,0.42', look: '0.1,0.07,0.1' },
+  { scene: 1, t: 10, cam: '0.85,-0.2,0.4', look: '0.2,0.05,0.11' },
   { scene: 7, t: 21, cam: '0.05,-0.62,0.42', look: '0,0.02,0.1' },
-  { scene: 8, t: 19, cam: '0.3,-0.62,0.42', look: '0.12,0.0,0.08' },
+  { scene: 8, t: 19, cam: '0.2,-0.72,0.42', look: '0.1,0.04,0.1' },
   { scene: 9, t: 20, cam: '0.05,-0.72,0.42', look: '0,0.03,0.14' },
 ];
 const browser = await chromium.launch({ channel: 'chrome', args: ['--autoplay-policy=no-user-gesture-required', '--ignore-gpu-blocklist'] });
