@@ -4,8 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#efe6d6">
-  <title>The Memory Garden — Player</title>
+  <title>Where Memories Grow — AR</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script type="importmap">
   {
@@ -48,14 +51,18 @@
   <div id="start-overlay">
     <div class="ov-card">
       <div class="ov-leaf" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="56" height="56"><path d="M32 58c0-18 4-30 20-42C36 16 22 26 22 40c0 7 4 13 10 18z" fill="#8fae6b"/><path d="M32 58c-2-14-8-24-20-30 2 14 8 24 20 30z" fill="#b7cf93"/></svg>
+        <svg viewBox="0 0 64 64" width="48" height="48"><path d="M32 58c0-18 4-30 20-42C36 16 22 26 22 40c0 7 4 13 10 18z" fill="#7f9d5c"/><path d="M32 58c-2-14-8-24-20-30 2 14 8 24 20 30z" fill="#b7cf93"/></svg>
       </div>
-      <h1 id="ov-title">The Memory Garden</h1>
+      <p class="ov-brand">Where Memories Grow</p>
+      <h1 id="ov-title">Scan the Book</h1>
       <p id="ov-sub"></p>
+      <div class="ov-icons" id="ov-icons" aria-label="Scan Here icons to look for"></div>
       <button id="start-btn">Start the camera</button>
-      <p class="ov-note">Start close to the icon so it locks on, then move back. Keep the page flat and well lit, and look at it at an angle, like a pop-up card.</p>
+      <p class="ov-note">Start close to the icon so it locks on, then step back. Keep the page flat and well lit, and look at it at an angle, like a pop-up card.</p>
       <p id="err"></p>
+      <a class="ov-back" href="index.html">← Back to the book</a>
     </div>
+    <p class="ov-credit"><em>Where Memories Grow</em> · written, illustrated and developed by Farnaz Attar</p>
   </div>
 
   <script type="module" src="js/app.js"></script>

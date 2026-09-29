@@ -1,4 +1,4 @@
-// The Memory Garden player — Preview (3D, no camera) and AR (camera + printed book)
+// Where Memories Grow player — Preview (3D, no camera) and AR (camera + printed book)
 import * as THREE from 'three';
 import { OrbitControls } from '../libs/OrbitControls.js';
 import { loadTexture, caption } from './engine.js';
@@ -123,6 +123,7 @@ async function startPreview() {
   const shade = new THREE.Mesh(new THREE.PlaneGeometry(1.08, PAGE_H + 0.08), new THREE.MeshBasicMaterial({ color: 0x9c8f7a, transparent: true, opacity: 0.35 }));
   shade.position.set(0.006, -0.008, -0.003);
   world.add(shade);
+  if (params.get('bg')) { world.background.set('#' + params.get('bg')); table.material.color.set('#' + params.get('bg')); }
   const pageTex = (await loadTexture(`assets/scene${sceneId}/ground.jpg`)).tex;
   const page = new THREE.Mesh(new THREE.PlaneGeometry(1, PAGE_H), new THREE.MeshBasicMaterial({ map: pageTex }));
   world.add(page);
@@ -264,25 +265,28 @@ async function startAR() {
 /* ---------------- scan hint: show the icons to look for ---------------- */
 function buildHint() {
   const list = scene ? TARGETS.filter((t) => String(t.scene) === sceneId) : TARGETS;
-  const row = hintEl.querySelector('.icons');
-  row.innerHTML = '';
-  for (const t of list) {
-    const fig = document.createElement('figure');
-    fig.innerHTML = `<img src="${t.img}" alt=""><figcaption>${t.label}</figcaption>`;
-    row.appendChild(fig);
+  for (const row of [hintEl.querySelector('.icons'), $('ov-icons')]) {
+    row.innerHTML = '';
+    for (const t of list) {
+      const fig = document.createElement('figure');
+      fig.innerHTML = `<img src="${t.img}" alt=""><figcaption>${t.label}</figcaption>`;
+      row.appendChild(fig);
+    }
   }
 }
 
 /* ---------------- boot ---------------- */
 if (mode === 'preview') {
+  if (scene) document.title = scene.title + ' · Where Memories Grow';
   if (!scene) fail('Unknown scene.');
   else startPreview().catch((e) => { console.error(e); fail('Preview failed to start: ' + e.message); });
 } else {
   $('ov-title').textContent = scene ? scene.title : 'Scan the Book';
   $('ov-sub').textContent = scene
-    ? 'Point your camera at a “Scan Here” icon on the printed page of this scene. Any other page of the book works too.'
-    : 'Point your camera at any “Scan Here” icon in the book, and its memory will come alive on the page.';
-  setTitle(scene ? scene.title : 'The Memory Garden');
+    ? 'Point your camera at a Scan Here icon on this page of the book. The other pages work too.'
+    : 'Point your camera at any Scan Here icon in the book, and its memory will come alive on the page.';
+  document.title = (scene ? scene.title : 'Scan the Book') + ' · Where Memories Grow';
+  setTitle(scene ? scene.title : 'Where Memories Grow');
   buildHint();
   startBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');

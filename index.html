@@ -4,95 +4,230 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6efe3">
-  <title>The Memory Garden — AR Pop-Up Book</title>
-  <meta name="description" content="The augmented-reality companion to the pop-up book The Memory Garden.">
+  <title>Where Memories Grow — an AR Pop-Up Book by Farnaz Attar</title>
+  <meta name="description" content="Where Memories Grow: an augmented-reality pop-up book about loss, love and remembering, written, illustrated and developed by Farnaz Attar.">
+  <meta property="og:title" content="Where Memories Grow">
+  <meta property="og:description" content="An augmented-reality pop-up book about loss, love and remembering, by Farnaz Attar.">
+  <meta property="og:image" content="assets/hero.jpg">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main class="menu">
-    <header class="hero">
-      <p class="eyebrow">An augmented-reality pop-up book</p>
-      <h1>The Memory Garden</h1>
-      <p class="lede">
-        Point your phone at a <strong>Scan Here</strong> icon in the book and the memories
-        step out of the paper: seasons turn, a window opens, seeds are planted, and a garden grows.
-      </p>
-      <a class="btn primary big" href="app.html?mode=ar">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>
-        Scan the Book
-      </a>
-      <p class="small">Works in Safari (iPhone) and Chrome (Android) — no app to install.</p>
-    </header>
+<body class="site">
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Where Memories Grow, home">
+      <img src="assets/favicon.svg" alt="" width="30" height="30">
+      <span>Where Memories Grow</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#scenes">Scenes</a>
+      <a href="#about">About</a>
+    </nav>
+    <a class="btn primary small" href="app.html?mode=ar">Scan</a>
+  </header>
 
-    <section class="cards" aria-label="Scenes">
-      <article class="card">
-        <img src="assets/thumbs/scene1.jpg" alt="Diana and Liam under the autumn tree" loading="lazy">
-        <div class="body">
-          <h2>Scene 1 — Memories</h2>
-          <p>Three icons, three seasons. Summer shadow games on the wall, the swing in the autumn rain, and snow angels side by side, each arriving with a magical spin.</p>
-          <div class="scan-icons">
-            <img src="targets/s1_spring.jpg" alt="Sunflower icon" title="Sunflower → summer">
-            <img src="targets/s1_autumn.jpg" alt="Umbrellas icon" title="Umbrellas → autumn">
-            <img src="targets/s1_winter.jpg" alt="Snowman icon" title="Snowman → winter">
-          </div>
-          <div class="actions">
-            <a class="btn ghost" href="app.html?scene=1&mode=preview">Preview</a>
-            <a class="btn primary" href="app.html?scene=1&mode=ar">AR Mode</a>
-          </div>
+  <main id="top">
+    <!-- ================= hero ================= -->
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">An augmented-reality pop-up book</p>
+        <h1>Where Memories&nbsp;Grow</h1>
+        <p class="lede">
+          A pop-up book about loss, love and remembering. Point your phone at a
+          <strong>Scan&nbsp;Here</strong> icon and the memories step out of the paper:
+          seasons turn, a window opens, seeds are planted, and a garden grows.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary big" href="app.html?mode=ar">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>
+            Scan the Book
+          </a>
+          <a class="btn ghost big" href="#scenes">Explore the scenes</a>
         </div>
-      </article>
+        <p class="hero-note">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Works in Safari (iPhone) and Chrome (Android). No app to install.
+        </p>
+        <p class="byline">Written, illustrated and developed by <strong>Farnaz Attar</strong></p>
+      </div>
 
-      <article class="card">
-        <img src="assets/thumbs/scene7.jpg" alt="Diana hugging her bunny" loading="lazy">
-        <div class="body">
-          <h2>Scene 7 — The Doll</h2>
-          <p>The window opens and the wind blows the drawings off the desk. A paper plane lands on the bunny, and Diana sits down to hug and play with it.</p>
-          <div class="scan-icons">
-            <img src="targets/s7_bunny.jpg" alt="Bunny icon" title="Bunny">
-          </div>
-          <div class="actions">
-            <a class="btn ghost" href="app.html?scene=7&mode=preview">Preview</a>
-            <a class="btn primary" href="app.html?scene=7&mode=ar">AR Mode</a>
-          </div>
+      <figure class="hero-art">
+        <div class="hero-frame">
+          <img src="assets/hero.jpg" alt="Diana with her long red hair, standing in a flowering garden that grows out of the book page" width="1200" height="960">
         </div>
-      </article>
-
-      <article class="card">
-        <img src="assets/thumbs/scene8.jpg" alt="Diana planting a seed" loading="lazy">
-        <div class="body">
-          <h2>Scene 8 — Planting Seeds</h2>
-          <p>Diana appears in three places and plants a seed each time, among flower petals, autumn leaves and snow. Each seed answers with a soft light, a sprout and a promise.</p>
-          <div class="scan-icons">
-            <img src="targets/s8_hole.jpg" alt="Seed hole icon" title="Seed hole">
-          </div>
-          <div class="actions">
-            <a class="btn ghost" href="app.html?scene=8&mode=preview">Preview</a>
-            <a class="btn primary" href="app.html?scene=8&mode=ar">AR Mode</a>
-          </div>
+        <figcaption class="float-bubble">Like the garden. Like me.</figcaption>
+        <div class="float-chip" aria-hidden="true">
+          <img src="targets/s9_flower.jpg" alt="">
+          <span>Scan Here</span>
         </div>
-      </article>
-
-      <article class="card">
-        <img src="assets/thumbs/scene9.jpg" alt="Diana in the memory garden" loading="lazy">
-        <div class="body">
-          <h2>Scene 9 — The Memory Garden</h2>
-          <p>A calm ending: wind in her hair and in the bush, and a paper plane crossing the page, waking blue and violet flowers that grow along its path.</p>
-          <div class="scan-icons">
-            <img src="targets/s9_flower.jpg" alt="Flower bush icon" title="Flower bush">
-          </div>
-          <div class="actions">
-            <a class="btn ghost" href="app.html?scene=9&mode=preview">Preview</a>
-            <a class="btn primary" href="app.html?scene=9&mode=ar">AR Mode</a>
-          </div>
-        </div>
-      </article>
+      </figure>
     </section>
 
-    <footer>
-      <p><strong>No printed book at hand?</strong> Open the <a href="targets.html">test pages</a> on a computer screen (or print them) and scan them with your phone.</p>
-      <p>AR Mode needs camera access and works over HTTPS. For best tracking keep the page flat, well lit, and hold the phone at an angle.</p>
-    </footer>
+    <!-- ================= how it works ================= -->
+    <section id="how" class="section">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2>Three steps into a memory</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="step-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="40" height="40"><path d="M24 12c-5-4-12-4-17-2v26c5-2 12-2 17 2 5-4 12-4 17-2V10c-5-2-12-2-17 2z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M24 12v26" stroke="currentColor" stroke-width="2.4"/></svg>
+          </span>
+          <h3>Open the book</h3>
+          <p>Lay the page flat in good light. Every scene has one or more <strong>Scan&nbsp;Here</strong> icons printed on it.</p>
+        </li>
+        <li>
+          <span class="step-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="40" height="40"><path d="M9 17v-4a4 4 0 0 1 4-4h4M31 9h4a4 4 0 0 1 4 4v4M39 31v4a4 4 0 0 1-4 4h-4M17 39h-4a4 4 0 0 1-4-4v-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="24" cy="24" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+          </span>
+          <h3>Scan an icon</h3>
+          <p>Press <em>Scan the Book</em>, allow the camera, and fill the frame with an icon until it locks on.</p>
+        </li>
+        <li>
+          <span class="step-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="40" height="40"><path d="M24 40V22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M24 26c-6 0-10-4-10-10 6 0 10 4 10 10zM24 22c0-6 4-10 10-10 0 6-4 10-10 10z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 40h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </span>
+          <h3>Watch it grow</h3>
+          <p>Step back and look at the page at an angle: the memory comes alive right where it belongs.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ================= scenes ================= -->
+    <section id="scenes" class="section">
+      <div class="section-head">
+        <p class="eyebrow">The scenes</p>
+        <h2>Four memories to find</h2>
+        <p class="section-sub">Try each one here with <strong>Preview</strong>, or open it in <strong>AR</strong> and scan the page.</p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <a class="card-media" href="app.html?scene=1&mode=preview" aria-label="Preview Scene 1">
+            <img src="assets/thumbs/scene1.jpg" alt="The classroom pop-up with the children and their shadows" loading="lazy" width="960" height="600">
+            <span class="badge">Scene 1</span>
+          </a>
+          <div class="body">
+            <h3>Memories</h3>
+            <p>Three icons, three seasons: summer shadow games on the wall, the swing in the autumn rain, and snow angels side by side, each arriving with a magical spin.</p>
+            <ul class="scan-list" aria-label="Scan Here icons">
+              <li><img src="targets/s1_spring.jpg" alt=""><span>Sunflower<small>Summer</small></span></li>
+              <li><img src="targets/s1_autumn.jpg" alt=""><span>Umbrellas<small>Autumn</small></span></li>
+              <li><img src="targets/s1_winter.jpg" alt=""><span>Snowman<small>Winter</small></span></li>
+            </ul>
+            <div class="actions">
+              <a class="btn ghost" href="app.html?scene=1&mode=preview">Preview</a>
+              <a class="btn primary" href="app.html?scene=1&mode=ar">Open in AR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <a class="card-media" href="app.html?scene=7&mode=preview" aria-label="Preview Scene 7">
+            <img src="assets/thumbs/scene7.jpg" alt="Diana sitting on the rug, hugging her bunny" loading="lazy" width="960" height="600">
+            <span class="badge">Scene 7</span>
+          </a>
+          <div class="body">
+            <h3>The Doll</h3>
+            <p>The window opens and the wind blows the drawings off the desk. A paper plane lands on the bunny, and Diana sits down to hug and play with it.</p>
+            <ul class="scan-list" aria-label="Scan Here icons">
+              <li><img src="targets/s7_bunny.jpg" alt=""><span>Bunny<small>Scan Me</small></span></li>
+            </ul>
+            <div class="actions">
+              <a class="btn ghost" href="app.html?scene=7&mode=preview">Preview</a>
+              <a class="btn primary" href="app.html?scene=7&mode=ar">Open in AR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <a class="card-media" href="app.html?scene=8&mode=preview" aria-label="Preview Scene 8">
+            <img src="assets/thumbs/scene8.jpg" alt="Diana planting a seed in the school garden" loading="lazy" width="960" height="600">
+            <span class="badge">Scene 8</span>
+          </a>
+          <div class="body">
+            <h3>Planting Seeds</h3>
+            <p>Diana appears in three places and plants a seed each time, among flower petals, autumn leaves and snow. Each seed answers with a soft light and a sprout.</p>
+            <ul class="scan-list" aria-label="Scan Here icons">
+              <li><img src="targets/s8_hole.jpg" alt=""><span>Seed hole<small>Scan Here</small></span></li>
+            </ul>
+            <div class="actions">
+              <a class="btn ghost" href="app.html?scene=8&mode=preview">Preview</a>
+              <a class="btn primary" href="app.html?scene=8&mode=ar">Open in AR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <a class="card-media" href="app.html?scene=9&mode=preview" aria-label="Preview Scene 9">
+            <img src="assets/thumbs/scene9.jpg" alt="Diana in the flowering garden with lavender growing around her" loading="lazy" width="960" height="600">
+            <span class="badge">Scene 9</span>
+          </a>
+          <div class="body">
+            <h3>The Memory Garden</h3>
+            <p>A calm ending: wind in her hair and in the bush, and a paper plane crossing the page, waking blue and violet flowers that grow along its path.</p>
+            <ul class="scan-list" aria-label="Scan Here icons">
+              <li><img src="targets/s9_flower.jpg" alt=""><span>Flower bush<small>Scan Here</small></span></li>
+            </ul>
+            <div class="actions">
+              <a class="btn ghost" href="app.html?scene=9&mode=preview">Preview</a>
+              <a class="btn primary" href="app.html?scene=9&mode=ar">Open in AR</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <aside class="tip">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 20h8M12 16v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <p><strong>No printed book at hand?</strong> Open the <a href="targets.html">test pages</a> on a computer screen (or print them) and scan them with your phone.</p>
+      </aside>
+    </section>
+
+    <!-- ================= about / credits ================= -->
+    <section id="about" class="section">
+      <div class="colophon">
+        <p class="eyebrow">About the project</p>
+        <h2 class="colophon-title">Where Memories Grow</h2>
+        <p class="credit-role">Written, illustrated and developed by</p>
+        <p class="credit-name">Farnaz Attar</p>
+
+        <div class="ornament" aria-hidden="true">
+          <span></span>
+          <svg viewBox="0 0 64 64" width="28" height="28"><path d="M32 56c0-16 4-27 18-38C35 18 23 27 23 40c0 6 3 12 9 16z" fill="currentColor" opacity="0.85"/><path d="M32 56c-2-12-7-21-18-27 2 12 7 21 18 27z" fill="currentColor" opacity="0.5"/></svg>
+          <span></span>
+        </div>
+
+        <p class="credit-role">A practical project developed for the Master’s thesis</p>
+        <p class="thesis">
+          Interactive Narratives for Emotional Learning:
+          <span>Developing an AR Pop-Up Book Framework for Explaining Death to Children</span>
+        </p>
+
+        <dl class="credit-grid">
+          <div>
+            <dt>Programme</dt>
+            <dd>MA in Design, Multimedia and Visual Communication</dd>
+          </div>
+          <div>
+            <dt>University</dt>
+            <dd>Sapienza University of Rome, 2026</dd>
+          </div>
+          <div>
+            <dt>Supervisor</dt>
+            <dd>Prof. Vincenzo Maselli</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <p>AR needs camera access and works over HTTPS. For best tracking keep the page flat and well lit, start close to the icon, then step back.</p>
+    <p class="fine">© 2026 Farnaz Attar · <em>Where Memories Grow</em> · Sapienza University of Rome</p>
+  </footer>
 </body>
 </html>

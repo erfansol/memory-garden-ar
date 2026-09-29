@@ -1,6 +1,6 @@
-# 🌿 The Memory Garden — AR Companion for the Pop-Up Book
+# 🌿 Where Memories Grow — AR Pop-Up Book
 
-The digital layer of the pop-up book **The Memory Garden**: a WebAR app that runs **in the mobile browser with no app install**. Point the phone at a **Scan Here** icon printed in the book and that page's animated memory steps out of the paper, anchored to the page, with light, weather and particle effects around it.
+The digital layer of the pop-up book **Where Memories Grow**, written, illustrated and developed by **Farnaz Attar**: a WebAR app that runs **in the mobile browser with no app install**. Point the phone at a **Scan Here** icon printed in the book and that page's animated memory steps out of the paper, anchored to the page, with light, weather and particle effects around it.
 
 **Live:** https://erfansol.github.io/memory-garden-ar/
 
@@ -111,3 +111,16 @@ node tools/test-ar.mjs                   # real tracking with a simulated camera
 | Icon never locks | More light, flatter page; fill the screen with the icon first, then move back |
 | Memory looks edge-on | Characters turn to face you; the flat winter patch is best seen from above at an angle |
 | Slow on an older phone | Close other tabs; lower the particle `count` values in `js/scenes` |
+
+---
+
+## Credits
+
+**Where Memories Grow**
+Written, illustrated and developed by **Farnaz Attar**
+
+A practical project developed for the Master’s thesis
+*Interactive Narratives for Emotional Learning: Developing an AR Pop-Up Book Framework for Explaining Death to Children*
+
+MA in Design, Multimedia and Visual Communication · Sapienza University of Rome, 2026
+Supervisor: Prof. Vincenzo Maselli

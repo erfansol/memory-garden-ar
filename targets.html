@@ -2,29 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6efe3">
-  <title>The Memory Garden — Test Pages</title>
+  <title>Test Pages · Where Memories Grow</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main class="menu targets-page">
-    <header class="hero compact">
-      <a class="back-link" href="index.html">← Back to the book</a>
-      <h1>Test pages</h1>
-      <p class="lede">
-        Show one of these pages full-screen on a computer (or print it on A3/A4) and point
-        your phone at its <strong>Scan Here</strong> icon in <a href="app.html?mode=ar">Scan the Book</a>.
-        The memory appears on the page exactly where it belongs.
+<body class="site">
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="Where Memories Grow, home">
+      <img src="assets/favicon.svg" alt="" width="30" height="30">
+      <span>Where Memories Grow</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#scenes">Scenes</a>
+      <a href="index.html#about">About</a>
+    </nav>
+    <a class="btn primary small" href="app.html?mode=ar">Scan</a>
+  </header>
+
+  <main class="section">
+    <div class="section-head">
+      <p class="eyebrow">No printed book at hand?</p>
+      <h2>Test pages</h2>
+      <p class="section-sub">
+        Show one of these pages full screen on a computer (or print it on A3 or A4), then open
+        <a href="app.html?mode=ar">Scan the Book</a> on your phone and point it at the page’s
+        <strong>Scan Here</strong> icon. The memory appears on the page exactly where it belongs.
       </p>
-    </header>
-    <section class="pages">
-      <figure><a href="assets/scene1/ground.jpg"><img src="assets/scene1/ground.jpg" alt="Scene 1 page"></a><figcaption>Scene 1 — sunflower, umbrellas and snowman icons</figcaption></figure>
-      <figure><a href="assets/scene7/ground.jpg"><img src="assets/scene7/ground.jpg" alt="Scene 7 page"></a><figcaption>Scene 7 — bunny icon</figcaption></figure>
-      <figure><a href="assets/scene8/ground.jpg"><img src="assets/scene8/ground.jpg" alt="Scene 8 page"></a><figcaption>Scene 8 — seed hole icon</figcaption></figure>
-      <figure><a href="assets/scene9/ground.jpg"><img src="assets/scene9/ground.jpg" alt="Scene 9 page"></a><figcaption>Scene 9 — flower bush icon</figcaption></figure>
+    </div>
+    <section class="pages" aria-label="Pages">
+      <figure><a href="assets/scene1/ground.jpg"><img src="assets/scene1/ground.jpg" alt="Scene 1 page" loading="lazy"></a><figcaption><strong>Scene 1 · Memories</strong> — sunflower, umbrellas and snowman icons</figcaption></figure>
+      <figure><a href="assets/scene7/ground.jpg"><img src="assets/scene7/ground.jpg" alt="Scene 7 page" loading="lazy"></a><figcaption><strong>Scene 7 · The Doll</strong> — bunny icon</figcaption></figure>
+      <figure><a href="assets/scene8/ground.jpg"><img src="assets/scene8/ground.jpg" alt="Scene 8 page" loading="lazy"></a><figcaption><strong>Scene 8 · Planting Seeds</strong> — seed hole icon</figcaption></figure>
+      <figure><a href="assets/scene9/ground.jpg"><img src="assets/scene9/ground.jpg" alt="Scene 9 page" loading="lazy"></a><figcaption><strong>Scene 9 · The Memory Garden</strong> — flower bush icon</figcaption></figure>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <p class="fine">© 2026 Farnaz Attar · <em>Where Memories Grow</em> · Sapienza University of Rome</p>
+  </footer>
 </body>
 </html>
