@@ -18,6 +18,7 @@ export class Experience {
     this.started = false;
     this.lostAt = 0;
     this.msg = '';
+    this.bubble = null;
   }
 
   async clip(name) {
@@ -86,6 +87,12 @@ export class Experience {
 
   // the line of text this memory wants to show (the app decides which memory speaks)
   say(text) { this.msg = text; }
+
+  // a speech bubble above a character: text + a point given in the local space of `obj`
+  // (e.g. the top of her head on the video cut-out, so it follows her when she leans)
+  sayAbove(text, obj = this.group, local = [0, 0, 0]) {
+    this.bubble = text ? { text, obj, local } : null;
+  }
 
   prime() { this.clips.forEach((c) => c.prime()); }
 

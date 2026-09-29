@@ -90,4 +90,36 @@ class Sound {
   }
 }
 
+// A soft gust of wind, synthesised from filtered noise (no audio file needed)
+Sound.prototype.wind = function (dur = 6, vol = 0.5) {
+  if (!this.enabled) return;
+  const ctx = this.ctx;
+  const n = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < n; i++) {           // brown noise: deep and airy
+    last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+    d[i] = last * 3.5;
+  }
+  const t0 = ctx.currentTime;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 0.7;
+  bp.frequency.setValueAtTime(280, t0);
+  bp.frequency.linearRampToValueAtTime(950, t0 + dur * 0.35);
+  bp.frequency.linearRampToValueAtTime(520, t0 + dur * 0.7);
+  bp.frequency.linearRampToValueAtTime(300, t0 + dur);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + dur * 0.25);
+  g.gain.linearRampToValueAtTime(vol * 0.65, t0 + dur * 0.6);
+  g.gain.linearRampToValueAtTime(0, t0 + dur);
+  src.connect(bp).connect(g).connect(this.master);
+  src.start(t0);
+  src.stop(t0 + dur + 0.1);
+};
+
 export const sound = new Sound();

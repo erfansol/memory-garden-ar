@@ -9,9 +9,9 @@ The digital layer of the pop-up book **The Memory Garden**: a WebAR app that run
 | 1 — Memories | 🌻 sunflower | **Summer.** Diana and Liam (seen from behind) play with their shadows; the shadows move on the wall in front of them. Golden motes and petals drift by. |
 | | ☂️ umbrellas | **Autumn.** The two of them on the swing under the maple tree, with soft rain, falling leaves and ripples on the puddles. |
 | | ⛄ snowman | **Winter.** Two snow angels in a patch of snow lying on the page, with snowfall and glints. Every season arrives with a Sims-style spin, a beam of light and a burst of sparkles. |
-| 7 — The Doll | 🐰 bunny | The night window opens, a breeze carries Diana's drawings to the floor, and a paper plane glides to the bunny. A path of light leads to the rug, where Diana appears holding the bunny, sits and hugs it: *“You are not alone.”* / *“I am here. You can rest now.”* |
-| 8 — Planting Seeds | 🕳️ seed hole | Diana steps out of the bushes and plants three seeds. Each one answers with a soft light, a sprout and one of the three remembrance lines, and leaves a small mound behind (sparkles, lavender petals, gentle rain). At the end the three sprouts grow into flowers: *“After that, I planted more.”* |
-| 9 — The Memory Garden | 💐 flower bush | A calm, looping ending: wind in Diana's long hair and in the flowering bush, new flowers growing all over the page, and paper planes drifting across with dotted trails, among petals and leaves. |
+| 7 — The Doll | 🐰 bunny | 1. the window opens → 2. the wind blows (with a wind sound) → 3. the drawings on the desk are blown to the floor → 4. a paper plane flies out of the window and lands on the Scan Me bunny → 5. Diana appears standing in the middle with her doll, sits down and plays with it; *“You are not alone.”* / *“I am here. You can rest now.”* appear above her head, and the sitting and playing loops. |
+| 8 — Planting Seeds | 🕳️ seed hole | Diana appears three times in three places on the page and plants a seed (the same animation), first among falling flower petals, then orange autumn leaves, then snow. Each seed answers with a soft light and a sprout, one remembrance line appears above her head, and the planted mound stays behind. |
+| 9 — The Memory Garden | 💐 flower bush | Diana and the flowering bush loop in the wind. A paper plane glides in from the left and out to the right, and along its path five blue and violet flowers grow one after another, then keep swaying gently. |
 
 All characters are the animation videos from `Final Animations`, with their backgrounds removed (see below).
 
@@ -34,7 +34,7 @@ Open **http://localhost:8642** and press **Preview** on any scene. Drag to orbit
 
 No printed book at hand? Open **Test pages** (`targets.html`) on a computer screen or print them, and scan those.
 
-Tips: keep the page flat and well lit, and hold the phone at an angle, the way you would look at a pop-up card. Sound is off by default; the speaker button turns on each memory's soundtrack.
+Tips: keep the page flat and well lit, start close to the icon so it locks on, then move back. In AR the sound starts with the camera (the speaker button mutes it); in Preview it is off until you press the speaker.
 
 After any change, publish again with:
 
@@ -81,7 +81,7 @@ Scene content is authored in **page units**: the open spread is 1 unit wide, the
 | Scene 9 girl, bush | off-white paper (flickering) | per-frame background model; an illustration segmentation model (isnet-anime) decides which enclosed white areas belong to her (collar, daisies) |
 | winter angels | snow | kept as a patch; the shader melts its edges into the page |
 
-Loops are made seamless by cross-fading the end into the beginning; Scene 7 plays the sitting-down once and then loops the hug. The growing flowers become sprite-sheet atlases, so any number can grow at once without extra video decoders.
+Loops are made seamless by cross-fading the end into the beginning; Scene 7 plays the sitting-down once and then loops the sitting and playing. A character's words appear in a speech bubble that follows her head on screen, so they stay readable on a phone. The growing flowers become sprite-sheet atlases, so any number can grow at once without extra video decoders.
 
 Rebuild (≈15 min; needs ffmpeg, `pip install numpy opencv-python-headless pillow "rembg[cpu]"`):
 

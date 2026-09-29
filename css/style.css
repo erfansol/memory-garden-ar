@@ -181,3 +181,21 @@ body.app { overflow: hidden; background: #111; overscroll-behavior: none; }
 #err { color: #a33; font-size: 0.86rem; line-height: 1.7; }
 
 body.clean #hud, body.clean #caption, body.clean #loading { display: none !important; }
+
+/* speech bubble above a character's head (follows her on screen) */
+#bubble {
+  position: fixed; left: 0; top: 0; z-index: 35; pointer-events: none;
+  width: max-content; max-width: min(66vw, 260px);
+  background: rgba(255, 251, 242, 0.95); color: var(--ink);
+  padding: 10px 16px; border-radius: 18px;
+  font-family: var(--serif); font-style: italic; font-size: 1rem; line-height: 1.5; text-align: center;
+  box-shadow: 0 6px 22px rgba(60, 40, 20, 0.22);
+  opacity: 0; transition: opacity 0.6s ease;
+  will-change: transform;
+}
+#bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -9px; margin-left: -9px;
+  border: 9px solid transparent; border-bottom: 0; border-top-color: rgba(255, 251, 242, 0.95);
+}
+#bubble.show { opacity: 1; }
+body.clean #bubble { display: none !important; }

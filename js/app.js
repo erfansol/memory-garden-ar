@@ -59,11 +59,33 @@ soundBtn.addEventListener('click', async () => {
   soundBtn.title = sound.enabled ? 'Sound on' : 'Sound off';
 });
 
-// Which memory gets to speak: the first one that has something to say
-function speak(list) {
-  if (playback.blocked) return caption('Tap the screen to start the animation');
-  const x = list.find((e) => e && e.msg);
-  caption(x ? x.msg : '');
+// Which memory gets to speak: the first one that has something to say.
+// Narration goes to the caption at the bottom; a character's words float above her head.
+const bubbleEl = $('bubble');
+const _p = new THREE.Vector3();
+let bubbleText = '';
+function speak(list, camera) {
+  if (playback.blocked) caption('Tap the screen to start the animation');
+  else {
+    const x = list.find((e) => e && e.msg);
+    caption(x ? x.msg : '');
+  }
+  const b = list.find((e) => e && e.bubble);
+  let shown = false;
+  if (b) {
+    _p.set(...b.bubble.local);
+    b.bubble.obj.localToWorld(_p);
+    _p.project(camera);
+    if (_p.z < 1 && Math.abs(_p.x) < 1.2 && Math.abs(_p.y) < 1.2) {
+      if (bubbleText !== b.bubble.text) { bubbleText = b.bubble.text; bubbleEl.textContent = bubbleText; }
+      const w = bubbleEl.offsetWidth, h = bubbleEl.offsetHeight;
+      const px = Math.min(innerWidth - w / 2 - 8, Math.max(w / 2 + 8, (_p.x * 0.5 + 0.5) * innerWidth));
+      const py = Math.max(h + 70, (-_p.y * 0.5 + 0.5) * innerHeight);
+      bubbleEl.style.transform = `translate(${px - w / 2}px, ${py - h - 14}px)`;
+      shown = true;
+    }
+  }
+  bubbleEl.classList.toggle('show', shown);
 }
 
 /* ================= Preview: the open book on a table ================= */
@@ -129,7 +151,7 @@ async function startPreview() {
   renderer.setAnimationLoop(() => {
     controls.update();
     for (const x of exps) x.frame(camera);
-    speak(exps);
+    speak(exps, camera);
     renderer.render(world, camera);
   });
 }
@@ -234,7 +256,7 @@ async function startAR() {
         live.push(s.exp);
       }
     }
-    speak(live);
+    speak(live, camera);
     renderer.render(world, camera);
   });
 }
@@ -264,6 +286,11 @@ if (mode === 'preview') {
   buildHint();
   startBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
+    // the tap that starts the camera also unlocks sound (the speaker button mutes it)
+    sound.enable().then((ok) => {
+      soundBtn.classList.toggle('on', !!ok);
+      soundBtn.setAttribute('aria-pressed', String(!!ok));
+    });
     loading(true, 'Starting the camera…');
     startAR().then(() => loading(false)).catch((e) => {
       console.error(e);

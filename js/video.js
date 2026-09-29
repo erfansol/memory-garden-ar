@@ -305,6 +305,7 @@ const ATLAS_FRAG = /* glsl */ `
   uniform vec2 grid;
   uniform float frames;
   uniform float opacity;
+  uniform float blueShift;   // turns violet petals towards blue (leaves stay green)
   varying vec2 vUv;
   vec4 cell(float f) {
     f = clamp(f, 0.0, frames - 1.0);
@@ -316,6 +317,9 @@ const ATLAS_FRAG = /* glsl */ `
     float f0 = floor(frame);
     vec4 a = cell(f0), b = cell(f0 + 1.0);
     vec4 c = mix(a, b, fract(frame));
+    float violet = smoothstep(0.02, 0.12, c.b - c.g) * blueShift;
+    c.r = mix(c.r, c.r * 0.62, violet);
+    c.g = mix(c.g, c.g * 1.06, violet);
     gl_FragColor = vec4(c.rgb, c.a * opacity);
     if (gl_FragColor.a < 0.004) discard;
     // the atlas is an sRGB image (decoded to linear when sampled): encode for the screen
@@ -334,6 +338,7 @@ export function atlasPlane(tex, meta, height, opts = {}) {
       grid: { value: new THREE.Vector2(meta.cols, meta.rows) },
       frames: { value: meta.frames },
       opacity: { value: 1 },
+      blueShift: { value: opts.blueShift ?? 0 },
       uBend: { value: 0 },
       uSkew: { value: 0 },
       uHeight: { value: height },
