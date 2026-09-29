@@ -1,6 +1,6 @@
 // Scene 8 — "Planting Seeds": Diana appears three times, in three places on the page,
 // and plants a seed each time (the same animation). Every seed answers with a soft
-// light and a tiny sprout, a sentence appears above her head, and each planting has its
+// light and a tiny sprout, a sentence appears above her head as she kneels, and each planting has its
 // own weather around her: flower petals, then orange autumn leaves, then snow.
 import * as THREE from 'three';
 import { loadTextures, window01, smooth01, pulse, cutout } from '../engine.js';
@@ -11,9 +11,9 @@ import { px } from '../layout.js';
 
 const H = 0.27;                       // height of the video cut-out (girl + soil mound)
 const MOUND_V = 0.2222;               // everything below this (in the last frame) is the soil mound
-const HEAD_V = 0.97;                  // top of her head when standing
+const HEAD_V = 0.66;                  // top of her head while she kneels to plant
 const VIDEO_LEN = 21.0;
-const V_SEED = 9.5, V_COVER = 14.0, V_SPROUT = 16.6;   // moments inside the video
+const V_SEED = 9.5, V_COVER = 14.0;   // moments inside the video
 const SPOTS = [
   { p: px(2874, 1467), weather: 'petals' },   // the printed hole with the seed
   { p: [0.02, -0.04], weather: 'leaves' },
@@ -22,10 +22,12 @@ const SPOTS = [
 const START = [0.6, 24.6, 48.6];      // when she appears at each spot
 const PLAY_DELAY = 0.6;
 const FINALE = 71, LOOP = 80;
+// shown above her head while she kneels to plant (from the moment she sits down until the seed is covered)
+const V_KNEEL = 3.2, V_COVERED = 13.8;
 const WORDS = [
-  '“I can’t bring you back, but I can keep your memory with kindness.”',
-  '“Every time I remember you, something small grows inside me.”',
-  '“Memories don’t end; they only change their shape.”',
+  'When a memory feels close, you can plant a seed for it.',
+  'You can do it once, or again, whenever the feeling returns.',
+  'There is no wrong way to remember; you can take the time and space you need.',
 ];
 
 async function planting() {
@@ -102,8 +104,7 @@ async function planting() {
       if (i === cur) {
         reveal = st.appear.reveal(t, 0.05, 1.2) * (1 - smooth01((t - end) / 1.3));
         if (t >= end) clipLow = MOUND_V;
-        const sprout = play + V_SPROUT;
-        if (t > sprout + 0.3 && t < end + 0.6) words = WORDS[i];
+        if (t > play + V_KNEEL && t < play + V_COVERED) words = WORDS[i];
       }
       st.appear.update(t);
       st.seedBurst.update(t);
@@ -120,7 +121,7 @@ async function planting() {
 
     X.sayAbove(words, girl.userData.mesh, [0, H * HEAD_V, 0]);
     let msg = '';
-    if (window01(t, 0.8, 4.2, 0.5) > 0.5) msg = '“This one is for you, Liam,” I whispered.';
+    if (window01(t, 0.4, 4.0, 0.5) > 0.5) msg = '“This one is for you, Liam,” I whispered.';
     if (window01(t, FINALE, 6, 0.5) > 0.5) msg = 'After that, I planted more.';
     X.say(msg);
   };

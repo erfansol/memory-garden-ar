@@ -22,7 +22,7 @@ const SCAN_ME = px(2985, 1420);        // between the printed bunny and its "Sca
 const GIRL_H = 0.3;
 const HEAD_SITTING = 0.64;             // top of her head when sitting, as a fraction of GIRL_H
 const T_WIND = 3.6, T_PLANE = 9.2, T_GIRL = 13.8, T_WORDS = 17.6;
-const WORDS = ['“You are not alone.”', '“I am here. You can rest now.”'];
+const WORDS = 'When your feelings become too heavy, you can hold something soft to help you feel safe.';
 
 async function doll() {
   const X = new Experience('s7_bunny');
@@ -141,13 +141,8 @@ async function doll() {
     hearts.set(sitting);
     hearts.update(t);
 
-    // her words float above her head, and come back every half minute while she plays
-    let words = '';
-    if (t > T_WORDS) {
-      const c = (t - T_WORDS) % 30;
-      if (c < 6) words = WORDS[0];
-      else if (c > 6.8 && c < 13) words = WORDS[1];
-    }
+    // the words float above her head once she sits, and come back every half minute while she plays
+    const words = t > T_WORDS && (t - T_WORDS) % 30 < 10 ? WORDS : '';
     X.sayAbove(words, girl.userData.mesh, [0, GIRL_H * HEAD_SITTING, 0]);
     X.say(window01(t, T_WIND + 0.2, 4.6, 0.5) > 0.5 ? 'A soft breeze drifts in through the open window…' : '');
   };
