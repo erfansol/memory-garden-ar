@@ -35,9 +35,10 @@ const R = {
 const facing = (n) => Math.atan2(n[0], -n[1]);           // rotation.z that turns a picture to face n
 const onRight = (s, d) => [R.corner[0] + R.dir[0] * s + R.out[0] * d, R.corner[1] + R.dir[1] * s + R.out[1] * d];
 
-const SUMMER = { s: 0.16, d: 0.13, h: 0.12, shadowH: 0.15 };
-const AUTUMN = { x: -0.02, y: 0.262, h: 0.38 };          // Farnaz's brown line, behind the back wall
-const WINTER = { x: -0.345, y: 0.02, h: 0.3 };           // over the printed snow-angel outlines
+// sizes balanced so the three seasons read at a similar scale (Farnaz's review)
+const SUMMER = { s: 0.16, d: 0.14, h: 0.155, shadowH: 0.19 };
+const AUTUMN = { x: -0.02, y: 0.262, h: 0.3 };           // Farnaz's brown line, behind the back wall
+const WINTER = { x: -0.345, y: 0.02, h: 0.36 };          // over the printed snow-angel outlines
 
 /* ---------------- summer ---------------- */
 async function summer() {

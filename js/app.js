@@ -2,7 +2,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from '../libs/OrbitControls.js';
 import { loadTexture, caption } from './engine.js';
-import { TARGETS, PAGE_H, pageToTarget } from './layout.js';
+import { TARGETS, PAGE_H } from './layout.js';
+import { Stage } from './tracking.js';
 import { GroundRing } from './fx.js';
 import { sound } from './sound.js';
 import { playback } from './video.js';
@@ -17,7 +18,6 @@ const SCENES = {
   8: { title: 'Scene 8 — Planting Seeds', mod: S8 },
   9: { title: 'Scene 9 — The Memory Garden', mod: S9 },
 };
-const BUILDERS = { ...S1.STATIONS, ...S7.STATIONS, ...S8.STATIONS, ...S9.STATIONS };
 
 const params = new URLSearchParams(location.search);
 const sceneId = params.get('scene');
@@ -129,9 +129,8 @@ async function startPreview() {
   world.add(page);
   world.add(await scene.mod.popup());
 
-  const ids = Object.keys(scene.mod.STATIONS);
   loading(true, 'Loading the memories…');
-  const exps = await Promise.all(ids.map((id) => BUILDERS[id]()));
+  const exps = await Promise.all(Object.values(scene.mod.STATIONS).map((b) => b()));
   loading(false);
   exps.forEach((x) => world.add(x.group));
   exps.forEach((x, i) => setTimeout(() => x.start(), 300 + i * 1400));
@@ -158,118 +157,126 @@ async function startPreview() {
 }
 
 /* ================= AR: the printed book through the camera ================= */
+// Every spread has two targets (its left and right leaf). Both lead to the same memory,
+// shown on a Stage that follows whichever leaf is visible (js/tracking.js).
+const PAUSE_AFTER = 3.0;      // keep the memory playing through tracking drop-outs this long (s)
+
 async function startAR() {
   const { MindARThree } = await import('mindar-image-three');
   const mindar = new MindARThree({
     container: $('app'),
-    imageTargetSrc: './targets/targets.mind',
+    // a scene's own targets when a scene was chosen (faster), otherwise every scene's
+    imageTargetSrc: scene ? `./targets/scene${sceneId}.mind` : './targets/all.mind',
     maxTrack: 1,
     uiLoading: 'no',
     uiScanning: 'no',
     uiError: 'no',
-    filterMinCF: 0.0001,
-    filterBeta: 0.001,
-    warmupTolerance: 3,
-    missTolerance: 10,
+    // light filtering inside MindAR; the Stage does the real smoothing on every frame
+    filterMinCF: 0.004,
+    filterBeta: 0.02,
+    warmupTolerance: 2,
+    missTolerance: 12,
   });
   const { renderer, scene: world, camera } = mindar;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-  // one anchor per printed icon; its memory is built the first time it is seen
-  const slots = TARGETS.map((target, i) => {
+  // per scene: a stage, its target slots and (once built) its memories
+  const scenes = {};
+  for (const id of Object.keys(SCENES)) scenes[id] = { id, stage: new Stage(world), slots: [], exps: null, building: null, running: false, lostAt: 0 };
+  const targets = scene ? TARGETS.filter((t) => String(t.scene) === sceneId) : TARGETS;   // same order as the .mind file
+  targets.forEach((target, i) => {
     const anchor = mindar.addAnchor(i);
-    const wrap = new THREE.Group();
-    const m = pageToTarget(target);
-    wrap.scale.setScalar(m.scale);
-    wrap.position.set(m.x, m.y, 0);
-    anchor.group.add(wrap);
-    // a soft pulsing ring on the icon while its memory loads
-    const holder = new THREE.Group();
-    anchor.group.add(holder);
-    const ring = new GroundRing(holder, { size: 1.3, color: 0xfff0c8, dur: 1.4 });
-    const slot = { target, anchor, wrap, ring, exp: null, building: null, active: false };
-    anchor.onTargetFound = () => activate(slot);
-    anchor.onTargetLost = () => deactivate(slot);
-    return slot;
+    const ring = new GroundRing(anchor.group, { size: 1.1, color: 0xfff0c8, dur: 1.4 });
+    const sc = scenes[target.scene];
+    sc.slots.push({ target, anchor, ring, G: target.G, ref: [{ L: -0.25, R: 0.25 }[target.leaf] ?? 0, 0] });
   });
 
-  const build = (slot) => {
-    if (!slot.building) {
-      slot.building = BUILDERS[slot.target.id]().then((x) => {
-        slot.exp = x;
-        slot.wrap.add(x.group);
-        return x;
+  const build = (sc) => {
+    if (!sc.building) {
+      sc.building = Promise.all(Object.values(SCENES[sc.id].mod.STATIONS).map((b) => b())).then((exps) => {
+        exps.forEach((x) => sc.stage.group.add(x.group));
+        sc.exps = exps;
+        return exps;
       });
     }
-    return slot.building;
+    return sc.building;
+  };
+  const running = () => Object.values(scenes).filter((sc) => sc.running && sc.exps);
+  activeForSound = () => running().flatMap((sc) => sc.exps);
+
+  window.__mg = {                    // handy for debugging, and used by tools/targets/eval_photos.mjs
+    scenes, camera, started: false,
+    status: () => {
+      const sc = Object.values(scenes).find((x) => x.tracked);
+      const r = { tracked: !!sc, id: sc ? sc.stage.current.target.id : null, camT: mindar.video ? mindar.video.currentTime : 0 };
+      if (sc) {
+        _p.setFromMatrixPosition(sc.stage.root.matrix).project(camera);
+        r.sx = (_p.x * 0.5 + 0.5) * innerWidth; r.sy = (-_p.y * 0.5 + 0.5) * innerHeight;
+      }
+      return r;
+    },
   };
 
-  let hintTimer = null;
-  function activate(slot) {
-    slot.active = true;
-    console.log('AR_TARGET_FOUND', slot.target.id);
-    clearTimeout(hintTimer);
-    hintEl.classList.remove('show');
-    setTitle(SCENES[slot.target.scene].title);
-    if (slot.exp) {
-      slot.exp.resume();
-      return;
-    }
-    loading(true);
-    build(slot).then((x) => {
-      loading(false);
-      if (slot.active) x.start();
-    }).catch((e) => { loading(false); caption('Could not load this memory: ' + e.message); });
-  }
-  function deactivate(slot) {
-    slot.active = false;
-    if (slot.exp) slot.exp.pause();
-    loading(false);
-    clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => {
-      if (!slots.some((s) => s.active)) hintEl.classList.add('show');
-    }, 700);
-  }
-  activeForSound = () => slots.filter((s) => s.active && s.exp).map((s) => s.exp);
-  window.__mg = { slots, camera };   // handy for debugging from the console
-
   // warm up the memories of the chosen scene while the camera starts
-  const preload = scene ? slots.filter((s) => String(s.target.scene) === sceneId) : [];
-  preload.forEach((s) => build(s).catch(() => {}));
+  if (scene) build(scenes[sceneId]).catch(() => {});
 
   await mindar.start();
+  window.__mg.started = true;
   hintEl.classList.add('show');
   document.addEventListener('visibilitychange', () => {
-    slots.forEach((s) => s.exp && s.active && (document.hidden ? s.exp.pause() : s.exp.resume()));
+    running().forEach((sc) => sc.exps.forEach((x) => (document.hidden ? x.pause() : x.resume())));
   });
 
+  let last = performance.now() / 1000;
+  let lastAny = -1e9;
   renderer.setAnimationLoop(() => {
     const now = performance.now() / 1000;
+    const dt = Math.min(0.1, now - last);
+    last = now;
     const live = [];
-    for (const s of slots) {
-      if (s.active && !s.exp) {
-        if (Math.floor(now / 1.4) !== s.ringN) { s.ringN = Math.floor(now / 1.4); s.ring.trigger(now, 0, 0); }
+    for (const sc of Object.values(scenes)) {
+      const st = sc.stage.update(sc.slots, now, dt);
+      sc.tracked = st.tracked;
+      if (st.tracked) {
+        lastAny = now;
+        setTitle(SCENES[sc.id].title);
+        if (!sc.exps) {
+          // a soft pulsing ring on the page while its memory loads
+          for (const s of sc.slots) if (Math.floor(now / 1.4) !== s.ringN) { s.ringN = Math.floor(now / 1.4); s.ring.trigger(now, 0, 0); }
+          if (!sc.building) { loading(true); build(sc).then(() => loading(false)).catch((e) => { loading(false); caption('Could not load this memory: ' + e.message); }); }
+        } else if (!sc.running) {
+          sc.running = true;
+          if (!sc.everStarted) {
+            sc.everStarted = true;
+            sc.exps.forEach((x, i) => setTimeout(() => x.start(), i * 700));
+          } else sc.exps.forEach((x) => x.resume());
+        }
+      } else if (sc.running && st.lostFor > PAUSE_AFTER) {
+        // gone for a while: pause (it picks up where it was, or restarts after a long break)
+        sc.running = false;
+        sc.exps.forEach((x) => x.pause());
       }
-      s.ring.update(now);
-      if (s.exp && s.active) {
-        s.exp.frame(camera);
-        live.push(s.exp);
+      for (const s of sc.slots) s.ring.update(now);
+      if (sc.running && sc.exps) {
+        for (const x of sc.exps) { if (x.started) x.frame(camera); }
+        if (st.shown) live.push(...sc.exps);
       }
     }
+    hintEl.classList.toggle('show', now - lastAny > 1.2);
     speak(live, camera);
     renderer.render(world, camera);
   });
 }
 
-/* ---------------- scan hint: show the icons to look for ---------------- */
+/* ---------------- scan hint: which pages can be scanned ---------------- */
 function buildHint() {
-  const list = scene ? TARGETS.filter((t) => String(t.scene) === sceneId) : TARGETS;
+  const ids = scene ? [sceneId] : Object.keys(SCENES);
   for (const row of [hintEl.querySelector('.icons'), $('ov-icons')]) {
     row.innerHTML = '';
-    for (const t of list) {
+    for (const id of ids) {
       const fig = document.createElement('figure');
-      fig.innerHTML = `<img src="${t.img}" alt=""><figcaption>${t.label}</figcaption>`;
+      fig.innerHTML = `<img src="assets/testpages/scene${id}_thumb.jpg" alt=""><figcaption>Scene ${id}</figcaption>`;
       row.appendChild(fig);
     }
   }
@@ -283,8 +290,8 @@ if (mode === 'preview') {
 } else {
   $('ov-title').textContent = scene ? scene.title : 'Scan the Book';
   $('ov-sub').textContent = scene
-    ? 'Point your camera at a Scan Here icon on this page of the book. The other pages work too.'
-    : 'Point your camera at any Scan Here icon in the book, and its memory will come alive on the page.';
+    ? 'Point your camera at this spread of the book. The other scenes work too.'
+    : 'Open the book at a scene and point your camera at the pages: the memory comes alive on the paper.';
   document.title = (scene ? scene.title : 'Scan the Book') + ' · Where Memories Grow';
   setTitle(scene ? scene.title : 'Where Memories Grow');
   buildHint();
