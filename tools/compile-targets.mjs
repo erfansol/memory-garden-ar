@@ -1,22 +1,21 @@
-// Compiles the target images (one per leaf of each spread) into targets/targets.mind.
+// Compiles the six "Scan Here" icons into targets/targets.mind for MindAR tracking.
 // Run:  node tools/compile-targets.mjs
 //
 // mind-ar's own OfflineCompiler imports the native `canvas` package only to read
 // pixels, and that package often fails to install. We read pixels with sharp and
 // feed them straight to the compiler instead.
 import sharp from 'sharp';
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { CompilerBase } from 'mind-ar/src/image-target/compiler-base.js';
 import { buildTrackingImageList } from 'mind-ar/src/image-target/image-list.js';
 import { extractTrackingFeatures } from 'mind-ar/src/image-target/tracker/extract-utils.js';
 import 'mind-ar/src/image-target/detector/kernels/cpu/index.js';
-import * as msgpack from '@msgpack/msgpack';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-// targets/targets.json is written by tools/targets/build_targets.py (same order as the app uses)
-const TARGETS = JSON.parse(readFileSync(join(ROOT, 'targets', 'targets.json'), 'utf8')).map((t) => t.id);
+// Same order as TARGETS in js/layout.js
+const TARGETS = ['s1_spring', 's1_autumn', 's1_winter', 's7_bunny', 's8_hole', 's9_flower'];
 
 class RawCompiler extends CompilerBase {
   createProcessCanvas(img) {
@@ -64,16 +63,5 @@ await compiler.compileImageTargets(images, (p) => {
   if (pct !== last) { last = pct; process.stdout.write(`\rcompiling: ${pct}%   `); }
 });
 const buffer = compiler.exportData();
-writeFileSync(join(ROOT, 'targets', 'all.mind'), Buffer.from(buffer));
-console.log('\n✓ targets/all.mind —', buffer.byteLength, 'bytes');
-
-// one smaller file per scene (faster to download, and detection only compares with
-// that scene's targets); same format, just a subset of the compiled list
-const all = msgpack.decode(new Uint8Array(buffer));
-const meta = JSON.parse(readFileSync(join(ROOT, 'targets', 'targets.json'), 'utf8'));
-for (const scene of [...new Set(meta.map((t) => t.scene))]) {
-  const idx = meta.map((t, i) => (t.scene === scene ? i : -1)).filter((i) => i >= 0);
-  const part = msgpack.encode({ ...all, dataList: idx.map((i) => all.dataList[i]) });
-  writeFileSync(join(ROOT, 'targets', `scene${scene}.mind`), Buffer.from(part));
-  console.log(`✓ targets/scene${scene}.mind —`, part.byteLength, 'bytes');
-}
+writeFileSync(join(ROOT, 'targets', 'targets.mind'), Buffer.from(buffer));
+console.log('\n✓ targets/targets.mind written —', buffer.byteLength, 'bytes');

@@ -369,7 +369,7 @@ body.app { overflow: hidden; background: #111; overscroll-behavior: none; }
 }
 #scan-hint .icons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
 #scan-hint figure { background: rgba(255, 252, 245, 0.94); border-radius: 12px; padding: 4px 4px 3px; text-align: center; }
-#scan-hint figure img { width: 72px; height: 51px; object-fit: cover; border-radius: 8px; }
+#scan-hint figure img { width: 52px; height: 46px; object-fit: cover; border-radius: 8px; }
 #scan-hint figcaption { font-size: 0.66rem; font-weight: 700; color: var(--muted); margin-top: 2px; }
 
 #start-overlay {
@@ -392,7 +392,7 @@ body.app { overflow: hidden; background: #111; overscroll-behavior: none; }
 #start-overlay p { color: var(--muted); line-height: 1.7; font-size: 0.96rem; }
 .ov-icons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .ov-icons figure { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 5px 5px 4px; }
-.ov-icons img { width: 96px; height: 68px; object-fit: cover; border-radius: 10px; }
+.ov-icons img { width: 64px; height: 58px; object-fit: cover; border-radius: 10px; }
 .ov-icons figcaption { font-size: 0.7rem; font-weight: 700; color: var(--muted); margin-top: 3px; }
 #start-overlay button {
   margin-top: 4px; padding: 15px 40px; font: 700 1.05rem var(--sans);
